@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* Token desain diambil dari Login_Admin.png.
+   Setiap variabel --color-* otomatis menjadi utilitas Tailwind,
+   misalnya --color-espresso menjadi bg-espresso, text-espresso, border-espresso. */
+@theme {
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-cream: #fbf9f4;    /* latar halaman */
+  --color-espresso: #432406; /* tombol, judul, logo */
+  --color-mocha: #7f5539;    /* teks kecil di atas judul */
+  --color-ink: #1b1c19;      /* label input */
+  --color-bark: #50453c;     /* teks isi dan ikon */
+  --color-mist: #a89e98;     /* placeholder */
+  --color-sand: #f5f3ee;     /* lingkaran ikon di kartu */
+  --color-danger: #b3261e;
+  --color-danger-soft: #fdecea;
+
+  --shadow-card: 0 8px 30px rgb(67 36 6 / 0.06);
+  --shadow-field: inset 0 2px 4px rgb(0 0 0 / 0.06);
+}
+
+@layer base {
+  body {
+    @apply bg-cream font-sans text-bark antialiased;
+  }
+}
