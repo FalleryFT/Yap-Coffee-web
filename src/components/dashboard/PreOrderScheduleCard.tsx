@@ -6,8 +6,7 @@ const headCell =
   'px-4 py-3 text-left text-[11px] font-semibold tracking-wide text-bark uppercase'
 
 export function PreOrderScheduleCard() {
-  // Dashboard hanya menampilkan 3 jadwal teratas; badge menghitung semuanya.
-  const rows = preOrderSchedules.slice(0, 3)
+  const rows = preOrderSchedules
 
   return (
     <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
@@ -25,6 +24,7 @@ export function PreOrderScheduleCard() {
               <th className={headCell}>Set Hari (Hari &amp; Tanggal)</th>
               <th className={headCell}>Set Lokasi (Titik Pickup)</th>
               <th className={headCell}>Set Jam (Jam Pickup &amp; Cut-off)</th>
+              <th className={headCell}>Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -70,6 +70,18 @@ export function PreOrderScheduleCard() {
                         </span>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-4 py-4">
+                    <span
+                      className={[
+                        'inline-block rounded-full px-3 py-1 text-xs font-semibold',
+                        s.status === 'aktif'
+                          ? 'bg-[#e8ecd8] text-olive'
+                          : 'bg-sand text-bark',
+                      ].join(' ')}
+                    >
+                      {s.status === 'aktif' ? '● Aktif' : '○ Mendatang'}
+                    </span>
                   </td>
                 </tr>
               )

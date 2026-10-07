@@ -5,10 +5,9 @@ import { tokenStorage } from './lib/tokenStorage'
 import DashboardPage from './pages/DashboardPage'
 import HistoryPage from './pages/HistoryPage'
 import LoginAdminPage from './pages/LoginAdminPage'
-import PlaceholderPage from './pages/PlaceholderPage'
-import PreOrderPage from './pages/PreOrderPage'
 import MenuPage from './pages/MenuPage'
-
+import OrdersPage from './pages/OrdersPage'
+import PreOrderPage from './pages/PreOrderPage'
 
 function RequireAuth({ children }: { children: ReactElement }) {
   return tokenStorage.get() ? children : <Navigate to="/login" replace />
@@ -28,8 +27,8 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/pre-order" element={<PreOrderPage />} />
         <Route path="/menu" element={<MenuPage />} />
-        <Route path="/orders" element={<PlaceholderPage title="Orders" />} />
-        <Route path="/history" element={<PlaceholderPage title="History" />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/history" element={<HistoryPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
