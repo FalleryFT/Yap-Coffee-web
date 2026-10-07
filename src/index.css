@@ -13,6 +13,11 @@
   --color-bark: #50453c;     /* teks isi dan ikon */
   --color-mist: #a89e98;     /* placeholder */
   --color-sand: #f5f3ee;     /* lingkaran ikon di kartu */
+  --color-sidebar: #f8f6f1;  /* latar sidebar */
+  --color-line: #ece7df;     /* garis pemisah */
+  --color-olive: #5b6b2f;    /* titik status outlet terbuka */
+  --color-peach: #fcebd8;    /* banner & chip tanggal */
+  --color-honey: #f6d9b4;    /* badge status meramu */
   --color-danger: #b3261e;
   --color-danger-soft: #fdecea;
 
