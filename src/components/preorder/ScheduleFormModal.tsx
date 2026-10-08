@@ -3,6 +3,8 @@ import {
   CalendarCog,
   CalendarDays,
   CalendarPlus,
+  Check,
+  ChevronDown,
   CircleCheck,
   Clock,
   Info,
@@ -10,7 +12,7 @@ import {
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { describeDate } from '../../lib/format'
 import type { PreOrderSchedule } from '../../types/admin'
@@ -188,6 +190,209 @@ function DateField({
   )
 }
 
+// ---------- Pilihan waktu yang dapat digulir ke bawah ----------
+
+const DEFAULT_PICKUP_TIMES = [
+  '07:00 - 09:30 WIB',
+  '07:30 - 10:00 WIB',
+  '07:45 - 09:30 WIB',
+  '08:00 - 10:30 WIB',
+  '08:30 - 11:30 WIB',
+  '09:00 - 12:00 WIB',
+  '09:30 - 12:30 WIB',
+  '10:00 - 12:30 WIB',
+  '10:30 - 13:00 WIB',
+  '11:00 - 13:30 WIB',
+  '11:30 - 13:00 WIB',
+  '12:00 - 14:30 WIB',
+  '13:00 - 15:30 WIB',
+  '14:00 - 16:30 WIB',
+  '15:00 - 17:30 WIB',
+  '16:00 - 18:30 WIB',
+  '16:30 - 19:00 WIB',
+  '17:00 - 19:30 WIB',
+  '17:30 - 20:00 WIB',
+  '18:00 - 20:30 WIB',
+  '18:30 - 21:00 WIB',
+  '19:00 - 21:30 WIB',
+  '19:30 - 22:00 WIB',
+]
+
+const DEFAULT_CUTOFF_TIMES = [
+  '05:00 WIB',
+  '05:30 WIB',
+  '06:00 WIB',
+  '06:30 WIB',
+  '07:00 WIB',
+  '07:30 WIB',
+  '08:00 WIB',
+  '08:30 WIB',
+  '09:00 WIB',
+  '09:30 WIB',
+  '10:00 WIB',
+  '11:00 WIB',
+  '12:00 WIB',
+  '13:00 WIB',
+  '13:30 WIB',
+  '14:00 WIB',
+  '14:30 WIB',
+  '15:00 WIB',
+  '16:00 WIB',
+  '17:00 WIB',
+  '18:00 WIB',
+  '19:00 WIB',
+  '20:00 WIB',
+  '21:00 WIB',
+  '22:00 WIB',
+]
+
+interface TimeDropdownFieldProps {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  options: string[]
+  placeholder?: string
+  icon?: LucideIcon
+  error?: string
+}
+
+function TimeDropdownField({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder = 'Pilih waktu',
+  icon: Icon,
+  error,
+}: TimeDropdownFieldProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLUListElement>(null)
+  const id = useId()
+
+  const allOptions = useMemo(() => {
+    if (value && !options.includes(value)) {
+      return [value, ...options]
+    }
+    return options
+  }, [value, options])
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen && listRef.current) {
+      const selected = listRef.current.querySelector<HTMLElement>('[aria-selected="true"]')
+      if (selected) {
+        selected.scrollIntoView({ block: 'nearest' })
+      }
+    }
+  }, [isOpen])
+
+  return (
+    <FieldShell label={label} htmlFor={id} error={error}>
+      <div ref={containerRef} className="relative">
+        <div
+          className={`${boxClass(error)} cursor-pointer justify-between pr-2`}
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            {Icon && <Icon size={16} className="shrink-0 text-mocha" />}
+            <input
+              id={id}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={placeholder}
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsOpen(true)
+              }}
+              className="w-full cursor-pointer bg-transparent text-ink outline-none placeholder:text-mist"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setIsOpen((prev) => !prev)
+            }}
+            className="rounded p-1 text-bark hover:text-espresso"
+            aria-label={`Buka pilihan waktu ${label}`}
+          >
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-200 ${isOpen ? 'rotate-180 text-espresso' : ''}`}
+            />
+          </button>
+        </div>
+
+        {isOpen && (
+          <div className="absolute left-0 right-0 top-full z-40 mt-1.5 overflow-hidden rounded-xl border border-line bg-white shadow-xl animate-in fade-in slide-in-from-top-1">
+            <div className="flex items-center justify-between border-b border-line/60 bg-sand/40 px-3 py-1.5 text-[11px] font-medium text-bark">
+              <span>Pilihan Waktu</span>
+              <span className="text-[10px] text-mist">Gulir ke bawah ↓</span>
+            </div>
+            <ul
+              ref={listRef}
+              role="listbox"
+              className="max-h-48 overflow-y-auto divide-y divide-line/30 py-1 text-sm outline-none"
+            >
+              {allOptions.map((opt) => {
+                const isSelected = opt === value
+                return (
+                  <li key={opt}>
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        onChange(opt)
+                        setIsOpen(false)
+                      }}
+                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
+                        isSelected
+                          ? 'bg-sand font-semibold text-espresso'
+                          : 'text-ink hover:bg-sand/60 hover:text-espresso'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        {Icon && (
+                          <Icon size={13} className={isSelected ? 'text-espresso' : 'text-mist'} />
+                        )}
+                        {opt}
+                      </span>
+                      {isSelected && <Check size={14} className="text-espresso" />}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
+    </FieldShell>
+  )
+}
+
 // ---------- Popup tambah / edit ----------
 
 interface ScheduleFormModalProps {
@@ -310,18 +515,20 @@ export function ScheduleFormModal({ mode, schedule, onSubmit, onClose }: Schedul
 
           <Section step={3} title={isEdit ? 'Set Jam (Pickup & Cut-off)' : 'Set Jam'}>
             <div className="grid gap-3 sm:grid-cols-2">
-              <TextField
+              <TimeDropdownField
                 label="Jam Pengambilan (Pickup Window)"
                 value={values.pickupTime}
                 onChange={(v) => update('pickupTime', v)}
+                options={DEFAULT_PICKUP_TIMES}
                 placeholder="08:30 - 11:30 WIB"
                 icon={Clock}
                 error={errors.pickupTime}
               />
-              <TextField
+              <TimeDropdownField
                 label="Batas Pemesanan (Cut-off Time)"
                 value={values.cutOff}
                 onChange={(v) => update('cutOff', v)}
+                options={DEFAULT_CUTOFF_TIMES}
                 placeholder="07:00 WIB"
                 icon={AlarmClockOff}
                 error={errors.cutOff}

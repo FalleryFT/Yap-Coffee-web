@@ -1,5 +1,4 @@
-import { Check, CheckCheck, CircleCheck, EllipsisVertical, Receipt, Search, SlidersHorizontal } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import { ChevronDown, Receipt, Search, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { dashboardOrders, todaySummary } from '../../data/dummy'
@@ -10,31 +9,35 @@ interface StatusConfig {
   badge: string
   dot: string
   next?: OrderStatus
-  action?: { label: string; icon: LucideIcon; className: string }
 }
 
-// Satu tempat untuk tampilan tiap status; klik tombol aksi memajukan status ke `next`.
+// pill color untuk dropdown
+const pill: Record<OrderStatus, string> = {
+  menunggu: 'bg-peach text-mocha',
+  meramu:   'bg-honey text-mocha',
+  siap_ambil: 'bg-[#e8ecd8] text-olive',
+  selesai:  'bg-sand text-bark',
+}
+
+// Satu tempat untuk tampilan tiap status; klik dropdown memajukan status ke `next`.
 const statusConfig: Record<OrderStatus, StatusConfig> = {
   menunggu: {
     label: 'Menunggu',
     badge: 'bg-danger-soft text-danger',
     dot: 'bg-danger',
     next: 'meramu',
-    action: { label: 'Terima', icon: Check, className: 'bg-espresso text-white' },
   },
   meramu: {
     label: 'Meramu',
     badge: 'bg-honey text-mocha',
     dot: 'bg-mocha',
     next: 'siap_ambil',
-    action: { label: 'Siap Ambil', icon: CheckCheck, className: 'bg-mocha text-white' },
   },
   siap_ambil: {
     label: 'Siap Ambil',
     badge: 'bg-sand text-bark',
     dot: 'bg-olive',
     next: 'selesai',
-    action: { label: 'Serahkan', icon: CircleCheck, className: 'bg-olive text-white' },
   },
   selesai: {
     label: 'Selesai',
@@ -70,13 +73,10 @@ export function OrderQueueTable() {
       o.id.toLowerCase().includes(keyword),
   )
 
-  function advance(id: string) {
-    setOrders((prev) =>
-      prev.map((o) => {
-        const next = statusConfig[o.status].next
-        return o.id === id && next ? { ...o, status: next } : o
-      }),
-    )
+  const flow: OrderStatus[] = ['menunggu', 'meramu', 'siap_ambil', 'selesai']
+
+  function advance(id: string, status: OrderStatus) {
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)))
   }
 
   return (
@@ -130,7 +130,6 @@ export function OrderQueueTable() {
             )}
             {rows.map((o) => {
               const cfg = statusConfig[o.status]
-              const Action = cfg.action
               return (
                 <tr key={o.id} className="align-middle text-sm">
                   <td className="px-4 py-4">
@@ -167,21 +166,22 @@ export function OrderQueueTable() {
                     </span>
                   </td>
                   <td className="px-4 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      {Action ? (
-                        <button
-                          onClick={() => advance(o.id)}
-                          className={`flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-semibold ${Action.className}`}
+                    <div className="flex items-center justify-end">
+                      <div className="relative">
+                        <select
+                          aria-label={`Status ${o.id}`}
+                          value={o.status}
+                          onChange={(e) => advance(o.id, e.target.value as OrderStatus)}
+                          className={`h-9 appearance-none rounded-full pl-4 pr-9 text-xs font-semibold outline-none ${pill[o.status]}`}
                         >
-                          <Action.icon size={14} />
-                          {Action.label}
-                        </button>
-                      ) : (
-                        <span className="text-xs text-mist">Struk POS</span>
-                      )}
-                      <button className="text-mist hover:text-espresso" aria-label="Opsi lainnya">
-                        <EllipsisVertical size={16} />
-                      </button>
+                          {flow.map((s) => (
+                            <option key={s} value={s} className="bg-white text-ink">
+                              {statusConfig[s].label}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown size={13} className="pointer-events-none absolute right-3 top-2.5" />
+                      </div>
                     </div>
                   </td>
                 </tr>

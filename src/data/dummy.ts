@@ -83,6 +83,28 @@ export const preOrderSchedules: PreOrderSchedule[] = [
     cutOffUrgent: false,
     status: 'mendatang',
   },
+  {
+    id: 5,
+    name: 'Kloter Siang Kantor Pusat',
+    date: '2024-10-29',
+    location: 'Gedung Graha Utama Lt. 3',
+    locationDetail: 'Ruang Rapat 3A – Meja Resepsionis',
+    pickupTime: '11:30 - 13:00 WIB',
+    cutOff: '28 Okt 22:00 WIB',
+    cutOffUrgent: false,
+    status: 'mendatang',
+  },
+  {
+    id: 6,
+    name: 'Kloter Sore Komunitas',
+    date: '2024-10-30',
+    location: 'Taman Kota Blok M',
+    locationDetail: 'Dekat Panggung Utama – Pintu Barat',
+    pickupTime: '15:00 - 17:30 WIB',
+    cutOff: '29 Okt 18:00 WIB',
+    cutOffUrgent: false,
+    status: 'mendatang',
+  },
 ]
 
 export const topMenuItems: TopMenuItem[] = [
