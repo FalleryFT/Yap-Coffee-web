@@ -1,3 +1,5 @@
+'use client'
+
 import { RefreshCw, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { NewOrderBanner } from '../components/dashboard/NewOrderBanner'
@@ -7,7 +9,7 @@ import { TodaySummary } from '../components/dashboard/TodaySummary'
 import { TopMenuCard } from '../components/dashboard/TopMenuCard'
 import { posSyncLabel, shift } from '../data/dummy'
 
-export default function DashboardPage() {
+export function DashboardScreen() {
   const [syncLabel, setSyncLabel] = useState(posSyncLabel)
 
   return (

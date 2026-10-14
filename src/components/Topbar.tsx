@@ -1,10 +1,12 @@
+'use client'
+
 import { Bell, CalendarDays, Store, User } from 'lucide-react'
-import { useLocation } from 'react-router-dom'
+import { usePathname } from 'next/navigation'
 import { outlet, today } from '../data/dummy'
 
 export function Topbar() {
   // Desain halaman Pre-Order memakai penanda "Sistem Online", halaman lain memakai lonceng + profil.
-  const showOnlinePill = useLocation().pathname === '/pre-order'
+  const showOnlinePill = usePathname() === '/pre-order'
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-cream/90 px-8 backdrop-blur">

@@ -1,7 +1,10 @@
+'use client'
+
 import { Clock, History, LayoutDashboard, LogOut, Receipt, Utensils } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
 import { adminJobTitle, outlet, pendingOrderCount } from '../data/dummy'
 import { tokenStorage } from '../lib/tokenStorage'
 import { getAdminProfile } from '../services/authService'
@@ -10,21 +13,22 @@ import { CupIcon } from './CupIcon'
 
 interface NavItem {
   label: string
-  to: string
+  href: string
   icon: LucideIcon
   badge?: number
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
-  { label: 'Pre-Order', to: '/pre-order', icon: Clock },
-  { label: 'Menu', to: '/menu', icon: Utensils },
-  { label: 'Orders', to: '/orders', icon: Receipt, badge: pendingOrderCount },
-  { label: 'History', to: '/history', icon: History },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Pre-Order', href: '/pre-order', icon: Clock },
+  { label: 'Menu', href: '/menu', icon: Utensils },
+  { label: 'Orders', href: '/orders', icon: Receipt, badge: pendingOrderCount },
+  { label: 'History', href: '/history', icon: History },
 ]
 
 export function Sidebar() {
-  const navigate = useNavigate()
+  const pathname = usePathname()
+  const router = useRouter()
   const [profile, setProfile] = useState<AdminUser | null>(null)
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export function Sidebar() {
 
   function logout() {
     tokenStorage.clear()
-    navigate('/login', { replace: true })
+    router.replace('/login')
   }
 
   return (
@@ -70,35 +74,32 @@ export function Sidebar() {
 
       {/* Menu navigasi */}
       <nav className="flex flex-1 flex-col gap-1 px-4" aria-label="Menu utama">
-        {navItems.map(({ label, to, icon: Icon, badge }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              [
+        {navItems.map(({ label, href, icon: Icon, badge }) => {
+          const isActive = pathname === href
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={[
                 'flex h-11 items-center gap-3 rounded-lg px-4 text-sm font-medium transition-colors',
                 isActive ? 'bg-espresso text-white' : 'text-bark hover:bg-espresso/5',
-              ].join(' ')
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon size={18} strokeWidth={1.75} />
-                <span className="flex-1">{label}</span>
-                {badge ? (
-                  <span
-                    className={[
-                      'flex size-6 items-center justify-center rounded-full text-xs font-semibold',
-                      isActive ? 'bg-white/20 text-white' : 'bg-mocha text-white',
-                    ].join(' ')}
-                  >
-                    {badge}
-                  </span>
-                ) : null}
-              </>
-            )}
-          </NavLink>
-        ))}
+              ].join(' ')}
+            >
+              <Icon size={18} strokeWidth={1.75} />
+              <span className="flex-1">{label}</span>
+              {badge ? (
+                <span
+                  className={[
+                    'flex size-6 items-center justify-center rounded-full text-xs font-semibold',
+                    isActive ? 'bg-white/20 text-white' : 'bg-mocha text-white',
+                  ].join(' ')}
+                >
+                  {badge}
+                </span>
+              ) : null}
+            </Link>
+          )
+        })}
       </nav>
 
       {/* Status outlet + keluar */}

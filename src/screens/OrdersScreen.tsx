@@ -1,3 +1,5 @@
+'use client'
+
 import {
   AlertTriangle,
   ArrowUp,
@@ -193,7 +195,7 @@ function Btn({
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function OrdersPage() {
+export function OrdersScreen() {
   const [list, setList] = useState<Order[]>(seed)
   const [f, setF] = useState('Semua')
   const [q, setQ] = useState('')

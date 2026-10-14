@@ -1,3 +1,5 @@
+'use client'
+
 import { AlertTriangle, Coffee, Cookie, Info, Trash2, X } from 'lucide-react'
 import { useCallback, useId } from 'react'
 import { Modal } from '../Modal'

@@ -1,3 +1,5 @@
+'use client'
+
 import { CirclePlus } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { MenuCard } from '../components/menu/MenuCard'
@@ -16,7 +18,7 @@ type ModalState =
   | { type: 'edit'; item: MenuItem }
   | { type: 'delete'; item: MenuItem }
 
-export default function MenuPage() {
+export function MenuScreen() {
   const [items, setItems] = useState<MenuItem[]>(menuItems)
   const [category, setCategory] = useState<MenuCategory | 'semua'>('semua')
   const [search, setSearch] = useState('')

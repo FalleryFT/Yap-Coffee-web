@@ -1,6 +1,8 @@
+'use client'
+
 import { ChevronDown, Receipt, Search, SlidersHorizontal } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { dashboardOrders, todaySummary } from '../../data/dummy'
 import type { AvatarTone, HintTone, OrderStatus } from '../../types/admin'
 
@@ -196,7 +198,7 @@ export function OrderQueueTable() {
           Menampilkan {rows.length} dari {todaySummary.totalOrders} pesanan hari ini
         </p>
         <Link
-          to="/orders"
+          href="/orders"
           className="flex h-11 items-center gap-2 rounded-lg bg-espresso px-5 text-sm font-semibold text-white hover:bg-espresso/90"
         >
           Lihat Seluruh Halaman Orders

@@ -1,7 +1,9 @@
+'use client'
+
 import { ArrowRight, Coffee, Eye, EyeOff, LoaderCircle, Lock, User } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 import { CupIcon } from '../components/CupIcon'
 import { Field } from '../components/Field'
 import { toApiError } from '../lib/apiError'
@@ -10,8 +12,13 @@ import { loginAdmin } from '../services/authService'
 
 type FieldErrors = Partial<Record<'username' | 'password', string>>
 
-export default function LoginAdminPage() {
-  const navigate = useNavigate()
+export function LoginScreen() {
+  const router = useRouter()
+
+  // Dicek lewat useEffect (bukan langsung saat render) karena localStorage hanya ada
+  // di browser: Next.js merender komponen ini sekali di server dulu sebelum hidrasi,
+  // dan render pertama di server/klien harus menghasilkan HTML yang sama persis.
+  const [checkingSession, setCheckingSession] = useState(true)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -20,8 +27,18 @@ export default function LoginAdminPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
-  // Sudah punya token: langsung ke dashboard.
-  if (tokenStorage.get()) return <Navigate to="/dashboard" replace />
+  useEffect(() => {
+    // Sengaja: effect ini SEDANG mensinkronkan dengan sistem eksternal (localStorage),
+    // jadi setState di sini bukan anti-pattern meski linter menandainya. Nilainya tidak
+    // bisa dihitung langsung saat render karena localStorage tidak ada di server.
+    if (tokenStorage.get()) {
+      router.replace('/dashboard')
+      return
+    }
+    setCheckingSession(false)
+  }, [router])
+
+  if (checkingSession) return null
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -40,7 +57,7 @@ export default function LoginAdminPage() {
     try {
       const result = await loginAdmin({ username: username.trim(), password })
       tokenStorage.set(result.token)
-      navigate('/dashboard', { replace: true })
+      router.replace('/dashboard')
     } catch (err) {
       const apiError = toApiError(err)
       const hasFieldErrors = Object.keys(apiError.fieldErrors).length > 0

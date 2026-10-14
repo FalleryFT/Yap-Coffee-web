@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Banknote,
   Calendar,
@@ -59,7 +61,7 @@ function Th({ children, className = '' }: { children: React.ReactNode; className
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function HistoryPage() {
+export function HistoryScreen() {
   const [q, setQ] = useState('')
   const [filter, setFilter] = useState(true)
   const [page, setPage] = useState(1)

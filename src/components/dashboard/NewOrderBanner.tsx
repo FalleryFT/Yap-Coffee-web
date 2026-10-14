@@ -1,5 +1,5 @@
 import { ArrowRight, BellRing } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { newOrderAlert } from '../../data/dummy'
 
 function joinNames(names: string[]): string {
@@ -21,7 +21,7 @@ export function NewOrderBanner() {
         </p>
       </div>
       <Link
-        to="/orders"
+        href="/orders"
         className="flex h-11 items-center gap-2 rounded-lg bg-espresso px-5 text-sm font-semibold text-white hover:bg-espresso/90"
       >
         Proses Sekarang

@@ -1,3 +1,5 @@
+'use client'
+
 import { CirclePlus } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { DeleteScheduleModal } from '../components/preorder/DeleteScheduleModal'
@@ -19,7 +21,7 @@ function sortSchedules(list: PreOrderSchedule[]): PreOrderSchedule[] {
   )
 }
 
-export default function PreOrderPage() {
+export function PreOrderScreen() {
   const [schedules, setSchedules] = useState<PreOrderSchedule[]>(preOrderSchedules)
   const [dialog, setDialog] = useState<Dialog>(null)
 

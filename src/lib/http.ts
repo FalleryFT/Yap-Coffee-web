@@ -6,7 +6,9 @@ import { tokenStorage } from './tokenStorage'
 const isPublic = (url?: string) => url?.includes('/auth/login') ?? false
 
 export const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  // Next.js hanya mengekspos variabel berawalan NEXT_PUBLIC_ ke kode sisi browser,
+  // dan nilainya di-inline saat build (lihat .env.example).
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 15_000,
   headers: {
     Accept: 'application/json',

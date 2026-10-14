@@ -1,3 +1,5 @@
+'use client'
+
 import { CalendarX, Clock, MapPin, TriangleAlert, X } from 'lucide-react'
 import { useId } from 'react'
 import { describeDate } from '../../lib/format'
