@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { MenuScreen } from '@/screens/MenuScreen'
+import { MenuScreen } from './components/MenuScreen'
 
 export const metadata: Metadata = {
   title: 'Menu',

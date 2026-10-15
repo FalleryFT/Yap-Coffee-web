@@ -1,4 +1,4 @@
-import type { MenuCategory, StockStatus } from '../types/admin'
+import type { MenuCategory, StockStatus } from '@/types/admin'
 
 export const menuCategories: MenuCategory[] = [
   'Kopi Susu',

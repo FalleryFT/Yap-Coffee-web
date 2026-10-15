@@ -1,7 +1,7 @@
 import { Coffee, Cookie, Pencil, Trash2 } from 'lucide-react'
-import { formatNumber } from '../../lib/format'
-import { getStockStatus } from '../../lib/menu'
-import type { MenuItem, StockStatus } from '../../types/admin'
+import { formatNumber } from '@/lib/format'
+import { getStockStatus } from '@/lib/menu'
+import type { MenuItem, StockStatus } from '@/types/admin'
 
 const stockBadge: Record<StockStatus, string> = {
   tersedia: 'bg-[#e8ecd8] text-olive',

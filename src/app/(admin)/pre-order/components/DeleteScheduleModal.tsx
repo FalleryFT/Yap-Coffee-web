@@ -2,9 +2,9 @@
 
 import { CalendarX, Clock, MapPin, TriangleAlert, X } from 'lucide-react'
 import { useId } from 'react'
-import { describeDate } from '../../lib/format'
-import type { PreOrderSchedule } from '../../types/admin'
-import { Modal } from '../Modal'
+import { describeDate } from '@/lib/format'
+import type { PreOrderSchedule } from '@/types/admin'
+import { Modal } from '@/app/components/Modal'
 
 interface DeleteScheduleModalProps {
   schedule: PreOrderSchedule

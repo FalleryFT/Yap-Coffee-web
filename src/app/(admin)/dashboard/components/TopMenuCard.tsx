@@ -1,5 +1,5 @@
 import { Coffee, Star } from 'lucide-react'
-import { topMenuContribution, topMenuItems } from '../../data/dummy'
+import { topMenuContribution, topMenuItems } from '@/data/dummy'
 
 export function TopMenuCard() {
   return (

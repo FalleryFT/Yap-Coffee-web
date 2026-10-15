@@ -11,8 +11,8 @@ import {
   X,
 } from 'lucide-react'
 import { useCallback, useId, useRef, useState } from 'react'
-import { Modal } from '../Modal'
-import type { MenuCategory, MenuItem } from '../../types/admin'
+import { Modal } from '@/app/components/Modal'
+import type { MenuCategory, MenuItem } from '@/types/admin'
 
 const categories: MenuCategory[] = ['Kopi Susu', 'Manual Brew', 'Non-Coffee', 'Makanan Ringan']
 

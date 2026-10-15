@@ -2,12 +2,12 @@
 
 import { RefreshCw, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
-import { NewOrderBanner } from '../components/dashboard/NewOrderBanner'
-import { OrderQueueTable } from '../components/dashboard/OrderQueueTable'
-import { TodaySummary } from '../components/dashboard/TodaySummary'
-import { TopMenuCard } from '../components/dashboard/TopMenuCard'
-import { WeeklyRevenueCard } from '../components/dashboard/WeeklyRevenueCard'
-import { posSyncLabel, shift } from '../data/dummy'
+import { NewOrderBanner } from './NewOrderBanner'
+import { OrderQueueTable } from './OrderQueueTable'
+import { TodaySummary } from './TodaySummary'
+import { TopMenuCard } from './TopMenuCard'
+import { WeeklyRevenueCard } from './WeeklyRevenueCard'
+import { posSyncLabel, shift } from '@/data/dummy'
 
 export function DashboardScreen() {
   const [syncLabel, setSyncLabel] = useState(posSyncLabel)

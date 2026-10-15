@@ -18,10 +18,10 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { FilterDropdown } from '../components/history/FilterDropdown'
-import type { DropdownOption } from '../components/history/FilterDropdown'
-import { MonthYearPicker, formatMonthLabel } from '../components/history/MonthYearPicker'
-import { MonthlyRevenueCard } from '../components/history/MonthlyRevenueCard'
+import { FilterDropdown } from './FilterDropdown'
+import type { DropdownOption } from './FilterDropdown'
+import { MonthYearPicker, formatMonthLabel } from './MonthYearPicker'
+import { MonthlyRevenueCard } from './MonthlyRevenueCard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type HistoryStatus = 'selesai' | 'batal'

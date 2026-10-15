@@ -3,8 +3,8 @@
 import { ChevronDown, Receipt, Search, SlidersHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import { dashboardOrders, todaySummary } from '../../data/dummy'
-import type { AvatarTone, HintTone, OrderStatus } from '../../types/admin'
+import { dashboardOrders, todaySummary } from '@/data/dummy'
+import type { AvatarTone, HintTone, OrderStatus } from '@/types/admin'
 
 interface StatusConfig {
   label: string

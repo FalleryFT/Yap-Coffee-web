@@ -1,6 +1,6 @@
 import { ArrowRight, Clock, MapPin, Pencil, Trash2 } from 'lucide-react'
-import { describeDate } from '../../lib/format'
-import type { PreOrderSchedule, ScheduleStatus } from '../../types/admin'
+import { describeDate } from '@/lib/format'
+import type { PreOrderSchedule, ScheduleStatus } from '@/types/admin'
 
 const headCell =
   'px-4 py-3 text-left text-[11px] font-semibold tracking-wide text-bark uppercase'

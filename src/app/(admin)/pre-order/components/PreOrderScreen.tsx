@@ -2,12 +2,12 @@
 
 import { CirclePlus } from 'lucide-react'
 import { useCallback, useState } from 'react'
-import { DeleteScheduleModal } from '../components/preorder/DeleteScheduleModal'
-import { ScheduleFormModal } from '../components/preorder/ScheduleFormModal'
-import type { ScheduleFormValues } from '../components/preorder/ScheduleFormModal'
-import { ScheduleTable } from '../components/preorder/ScheduleTable'
-import { preOrderSchedules } from '../data/dummy'
-import type { PreOrderSchedule } from '../types/admin'
+import { DeleteScheduleModal } from './DeleteScheduleModal'
+import { ScheduleFormModal } from './ScheduleFormModal'
+import type { ScheduleFormValues } from './ScheduleFormModal'
+import { ScheduleTable } from './ScheduleTable'
+import { preOrderSchedules } from '@/data/dummy'
+import type { PreOrderSchedule } from '@/types/admin'
 
 type Dialog =
   | { type: 'add' }

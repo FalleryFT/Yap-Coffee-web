@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Sidebar } from '@/components/Sidebar'
-import { Topbar } from '@/components/Topbar'
+import { Sidebar } from './components/Sidebar'
+import { Topbar } from './components/Topbar'
 import { tokenStorage } from '@/lib/tokenStorage'
 
 // Pengganti <RequireAuth><AdminLayout/></RequireAuth> dari App.tsx versi React Router:

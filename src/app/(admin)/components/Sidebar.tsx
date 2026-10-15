@@ -5,11 +5,11 @@ import type { LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { adminJobTitle, outlet, pendingOrderCount } from '../data/dummy'
-import { tokenStorage } from '../lib/tokenStorage'
-import { getAdminProfile } from '../services/authService'
-import type { AdminUser } from '../types/auth'
-import { CupIcon } from './CupIcon'
+import { adminJobTitle, outlet, pendingOrderCount } from '@/data/dummy'
+import { tokenStorage } from '@/lib/tokenStorage'
+import { getAdminProfile } from '@/services/authService'
+import type { AdminUser } from '@/types/auth'
+import { CupIcon } from '@/app/components/CupIcon'
 
 interface NavItem {
   label: string

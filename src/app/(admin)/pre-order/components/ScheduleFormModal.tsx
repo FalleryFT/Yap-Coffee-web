@@ -16,9 +16,9 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
-import { describeDate } from '../../lib/format'
-import type { PreOrderSchedule } from '../../types/admin'
-import { Modal } from '../Modal'
+import { describeDate } from '@/lib/format'
+import type { PreOrderSchedule } from '@/types/admin'
+import { Modal } from '@/app/components/Modal'
 
 export interface ScheduleFormValues {
   name: string
