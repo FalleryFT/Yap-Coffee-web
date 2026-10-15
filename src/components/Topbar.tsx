@@ -13,7 +13,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const showOnlinePill = usePathname() === '/pre-order'
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-line bg-cream/90 px-4 backdrop-blur sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-cream/90 px-4 backdrop-blur sm:px-6 lg:px-8">
       <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-espresso sm:gap-3">
         <button
           onClick={onMenuClick}

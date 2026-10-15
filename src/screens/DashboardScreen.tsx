@@ -4,9 +4,9 @@ import { RefreshCw, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { NewOrderBanner } from '../components/dashboard/NewOrderBanner'
 import { OrderQueueTable } from '../components/dashboard/OrderQueueTable'
-import { PreOrderScheduleCard } from '../components/dashboard/PreOrderScheduleCard'
 import { TodaySummary } from '../components/dashboard/TodaySummary'
 import { TopMenuCard } from '../components/dashboard/TopMenuCard'
+import { WeeklyRevenueCard } from '../components/dashboard/WeeklyRevenueCard'
 import { posSyncLabel, shift } from '../data/dummy'
 
 export function DashboardScreen() {
@@ -51,7 +51,7 @@ export function DashboardScreen() {
       <NewOrderBanner />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <PreOrderScheduleCard />
+        <WeeklyRevenueCard />
         <TopMenuCard />
       </div>
 

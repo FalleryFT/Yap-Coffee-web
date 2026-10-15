@@ -52,3 +52,10 @@ export interface MenuItem {
   addons: string[] // pilihan modifikasi, contoh 'Oat Milk +5k'
   image?: string
 }
+
+export interface WeeklyRevenuePoint {
+  day: string // 'Sen', 'Sel', ...
+  date: string // 'YYYY-MM-DD'
+  revenue: number | null // null = hari belum berjalan
+  isToday?: boolean
+}
