@@ -1,5 +1,10 @@
-// Data dummy untuk tampilan admin. Nanti diganti data dari API.
-import type { DashboardOrder, MenuItem, PreOrderSchedule, TopMenuItem } from '../types/admin'
+import type {
+  DashboardOrder,
+  MenuItem,
+  PreOrderSchedule,
+  TopMenuItem,
+  WeeklyRevenuePoint,
+} from '../types/admin'
 
 // ---------- Umum (sidebar & topbar) ----------
 
@@ -37,6 +42,18 @@ export const todaySummary = {
   revenue: 1042000,
   averagePerOrder: 24800,
 }
+
+export const weeklyRevenue: WeeklyRevenuePoint[] = [
+  { day: 'Sen', date: '2024-10-21', revenue: 865000 },
+  { day: 'Sel', date: '2024-10-22', revenue: 920000 },
+  { day: 'Rab', date: '2024-10-23', revenue: 780000 },
+  { day: 'Kam', date: '2024-10-24', revenue: 1042000, isToday: true },
+  { day: 'Jum', date: '2024-10-25', revenue: null },
+  { day: 'Sab', date: '2024-10-26', revenue: null },
+  { day: 'Min', date: '2024-10-27', revenue: null },
+]
+
+export const weeklyRevenueTrendPercent = 8 // dibanding periode yang sama pekan lalu
 
 export const preOrderSchedules: PreOrderSchedule[] = [
   {
