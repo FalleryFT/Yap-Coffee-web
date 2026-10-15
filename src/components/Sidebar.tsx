@@ -1,6 +1,6 @@
 'use client'
 
-import { Clock, History, LayoutDashboard, LogOut, Receipt, Utensils } from 'lucide-react'
+import { Clock, History, LayoutDashboard, LogOut, Receipt, Utensils, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -26,7 +26,13 @@ const navItems: NavItem[] = [
   { label: 'History', href: '/history', icon: History },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  /** Hanya relevan di bawah breakpoint lg (lihat SidebarProps di AdminLayout). Di lg ke atas sidebar selalu tampil. */
+  open: boolean
+  onClose: () => void
+}
+
+export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [profile, setProfile] = useState<AdminUser | null>(null)
@@ -41,22 +47,72 @@ export function Sidebar() {
     }
   }, [])
 
+  // Esc untuk menutup + kunci scroll halaman di belakangnya, hanya selagi drawer mobile terbuka.
+  // Di layar lg ke atas, `open` tidak pernah bisa true (tombol pemicunya disembunyikan via lg:hidden),
+  // jadi efek ini otomatis tidak aktif di desktop.
+  useEffect(() => {
+    if (!open) return
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [open, onClose])
+
   function logout() {
     tokenStorage.clear()
     router.replace('/login')
   }
 
   return (
-    <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line bg-sidebar lg:flex">
+    <>
+      {/* Latar gelap di belakang drawer, hanya di layar sempit & saat terbuka */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/35 lg:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        // role="dialog" HANYA saat benar-benar berfungsi sebagai overlay modal (drawer mobile
+        // terbuka). Di layar lg ke atas (atau saat tertutup), ini cuma landmark navigasi biasa —
+        // kalau role="dialog" dipasang permanen, elemen ini keliru ikut terhitung sebagai dialog
+        // di mana pun, bentrok dengan modal lain yang sedang terbuka di halaman yang sama.
+        role={open ? 'dialog' : undefined}
+        aria-modal={open ? true : undefined}
+        aria-label="Menu navigasi"
+        className={[
+          'fixed inset-y-0 left-0 z-40 flex h-dvh w-72 flex-col bg-sidebar shadow-2xl transition-transform duration-200 ease-out',
+          open ? 'translate-x-0' : '-translate-x-full',
+          'lg:sticky lg:top-0 lg:z-auto lg:w-64 lg:translate-x-0 lg:border-r lg:border-line lg:shadow-none',
+        ].join(' ')}
+      >
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 pt-6 pb-4">
-        <span className="flex size-10 items-center justify-center rounded-full border-2 border-espresso text-espresso">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-espresso text-espresso">
           <CupIcon size={20} />
         </span>
-        <div className="leading-tight">
+        <div className="min-w-0 flex-1 leading-tight">
           <p className="text-xl font-bold text-espresso">Yap Coffee</p>
           <p className="text-[11px] tracking-wide text-mocha">KOPI TETANGGA</p>
         </div>
+        <button
+          onClick={onClose}
+          className="rounded-lg p-1.5 text-bark hover:bg-espresso/5 lg:hidden"
+          aria-label="Tutup menu navigasi"
+        >
+          <X size={20} strokeWidth={1.75} />
+        </button>
       </div>
 
       {/* Profil admin */}
@@ -80,6 +136,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onClose}
               className={[
                 'flex h-11 items-center gap-3 rounded-lg px-4 text-sm font-medium transition-colors',
                 isActive ? 'bg-espresso text-white' : 'text-bark hover:bg-espresso/5',
@@ -122,6 +179,7 @@ export function Sidebar() {
           Keluar
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }
