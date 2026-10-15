@@ -4,7 +4,7 @@ import type {
   PreOrderSchedule,
   TopMenuItem,
   WeeklyRevenuePoint,
-} from '../types/admin'
+} from '@/types/admin'
 
 // ---------- Umum (sidebar & topbar) ----------
 

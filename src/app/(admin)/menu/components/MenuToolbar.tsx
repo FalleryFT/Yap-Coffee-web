@@ -1,6 +1,6 @@
 import { ChevronDown, Search } from 'lucide-react'
-import { stockFilterOptions } from '../../lib/menu'
-import type { MenuCategory, StockStatus } from '../../types/admin'
+import { stockFilterOptions } from '@/lib/menu'
+import type { MenuCategory, StockStatus } from '@/types/admin'
 
 export interface CategoryChip {
   value: MenuCategory | 'semua'

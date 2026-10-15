@@ -8,8 +8,8 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { todaySummary } from '../../data/dummy'
-import { formatNumber } from '../../lib/format'
+import { todaySummary } from '@/data/dummy'
+import { formatNumber } from '@/lib/format'
 
 interface StatCardProps {
   label: string

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ApiFailure } from '../types/api'
+import type { ApiFailure } from '@/types/api'
 
 // Sengaja tanpa "parameter properties" karena tsconfig memakai erasableSyntaxOnly.
 export class ApiError extends Error {

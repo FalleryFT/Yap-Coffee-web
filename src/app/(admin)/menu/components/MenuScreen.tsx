@@ -2,15 +2,15 @@
 
 import { CirclePlus } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
-import { MenuCard } from '../components/menu/MenuCard'
-import { MenuDeleteModal } from '../components/menu/MenuDeleteModal'
-import { MenuFormModal } from '../components/menu/MenuFormModal'
-import { MenuSummary } from '../components/menu/MenuSummary'
-import { MenuToolbar } from '../components/menu/MenuToolbar'
-import type { CategoryChip } from '../components/menu/MenuToolbar'
-import { menuItems } from '../data/dummy'
-import { getStockStatus, menuCategories } from '../lib/menu'
-import type { MenuCategory, MenuItem, StockStatus } from '../types/admin'
+import { MenuCard } from './MenuCard'
+import { MenuDeleteModal } from './MenuDeleteModal'
+import { MenuFormModal } from './MenuFormModal'
+import { MenuSummary } from './MenuSummary'
+import { MenuToolbar } from './MenuToolbar'
+import type { CategoryChip } from './MenuToolbar'
+import { menuItems } from '@/data/dummy'
+import { getStockStatus, menuCategories } from '@/lib/menu'
+import type { MenuCategory, MenuItem, StockStatus } from '@/types/admin'
 
 type ModalState =
   | { type: 'none' }

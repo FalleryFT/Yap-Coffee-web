@@ -4,11 +4,11 @@ import { ArrowRight, Coffee, Eye, EyeOff, LoaderCircle, Lock, User } from 'lucid
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
-import { CupIcon } from '../components/CupIcon'
-import { Field } from '../components/Field'
-import { toApiError } from '../lib/apiError'
-import { tokenStorage } from '../lib/tokenStorage'
-import { loginAdmin } from '../services/authService'
+import { CupIcon } from '@/app/components/CupIcon'
+import { Field } from './Field'
+import { toApiError } from '@/lib/apiError'
+import { tokenStorage } from '@/lib/tokenStorage'
+import { loginAdmin } from '@/services/authService'
 
 type FieldErrors = Partial<Record<'username' | 'password', string>>
 

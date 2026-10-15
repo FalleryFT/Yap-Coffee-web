@@ -1,6 +1,6 @@
-import { http } from '../lib/http'
-import type { ApiSuccess } from '../types/api'
-import type { AdminLoginPayload, AdminLoginResult, AdminUser } from '../types/auth'
+import { http } from '@/lib/http'
+import type { ApiSuccess } from '@/types/api'
+import type { AdminLoginPayload, AdminLoginResult, AdminUser } from '@/types/auth'
 
 export async function loginAdmin(payload: AdminLoginPayload): Promise<AdminLoginResult> {
   const { data } = await http.post<ApiSuccess<AdminLoginResult>>('/admin/auth/login', payload)

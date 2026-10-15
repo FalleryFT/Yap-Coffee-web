@@ -1,6 +1,6 @@
 import { ArrowRight, BellRing } from 'lucide-react'
 import Link from 'next/link'
-import { newOrderAlert } from '../../data/dummy'
+import { newOrderAlert } from '@/data/dummy'
 
 function joinNames(names: string[]): string {
   if (names.length <= 1) return names.join('')

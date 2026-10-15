@@ -1,5 +1,5 @@
 import { TrendingDown, TrendingUp } from 'lucide-react'
-import { formatNumber } from '../../lib/format'
+import { formatNumber } from '@/lib/format'
 import { MONTH_NAMES } from './MonthYearPicker'
 
 interface MonthlyRevenueCardProps {

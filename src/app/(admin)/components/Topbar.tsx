@@ -2,7 +2,7 @@
 
 import { Bell, CalendarDays, Menu, Store, User } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { outlet, today } from '../data/dummy'
+import { outlet, today } from '@/data/dummy'
 
 interface TopbarProps {
   onMenuClick: () => void

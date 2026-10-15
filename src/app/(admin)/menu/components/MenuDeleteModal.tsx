@@ -2,10 +2,10 @@
 
 import { AlertTriangle, Coffee, Cookie, Info, Trash2, X } from 'lucide-react'
 import { useCallback, useId } from 'react'
-import { Modal } from '../Modal'
-import { formatNumber } from '../../lib/format'
-import { getStockStatus } from '../../lib/menu'
-import type { MenuItem } from '../../types/admin'
+import { Modal } from '@/app/components/Modal'
+import { formatNumber } from '@/lib/format'
+import { getStockStatus } from '@/lib/menu'
+import type { MenuItem } from '@/types/admin'
 
 interface MenuDeleteModalProps {
   item: MenuItem

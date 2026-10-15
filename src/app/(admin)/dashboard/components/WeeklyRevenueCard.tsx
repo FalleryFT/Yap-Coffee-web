@@ -1,6 +1,6 @@
 import { Banknote, TrendingUp } from 'lucide-react'
-import { weeklyRevenue, weeklyRevenueTrendPercent } from '../../data/dummy'
-import { formatNumber } from '../../lib/format'
+import { weeklyRevenue, weeklyRevenueTrendPercent } from '@/data/dummy'
+import { formatNumber } from '@/lib/format'
 
 const TICK_COUNT = 4
 

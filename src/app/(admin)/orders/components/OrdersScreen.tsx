@@ -19,7 +19,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { useCallback, useId, useMemo, useState } from 'react'
-import { Modal } from '../components/Modal'
+import { Modal } from '@/app/components/Modal'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type OrderStatus = 'Menunggu' | 'Diproses' | 'Siap Ambil' | 'Selesai' | 'Dibatalkan'
