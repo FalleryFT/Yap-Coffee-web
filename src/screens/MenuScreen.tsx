@@ -81,7 +81,7 @@ export function MenuScreen() {
   }, [items, category, stock, search])
 
   return (
-    <main className="flex flex-col gap-6 px-8 py-6">
+    <main className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-mocha uppercase">

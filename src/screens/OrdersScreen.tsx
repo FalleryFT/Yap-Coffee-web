@@ -226,7 +226,7 @@ export function OrdersScreen() {
     setList((l) => l.map((o) => (o.id === id ? { ...o, status } : o)))
 
   return (
-    <main className="flex flex-col gap-6 px-8 py-6">
+    <main className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
       {/* ── Stat cards ── */}
       <div className="grid gap-4 lg:grid-cols-4">
         {/* Pesanan masuk hari ini */}

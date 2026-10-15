@@ -72,7 +72,7 @@ export function HistoryScreen() {
   )
 
   return (
-    <main className="flex flex-col gap-6 px-8 py-6">
+    <main className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
       {/* ── Header ── */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>

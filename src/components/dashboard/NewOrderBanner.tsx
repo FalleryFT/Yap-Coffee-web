@@ -9,7 +9,7 @@ function joinNames(names: string[]): string {
 
 export function NewOrderBanner() {
   return (
-    <section className="flex flex-wrap items-center gap-4 rounded-xl border border-honey border-l-4 border-l-mocha bg-peach p-4">
+    <section className="flex flex-col gap-4 rounded-xl border border-honey border-l-4 border-l-mocha bg-peach p-4 sm:flex-row sm:items-center">
       <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-mocha text-white">
         <BellRing size={22} strokeWidth={1.75} />
       </span>
@@ -22,7 +22,7 @@ export function NewOrderBanner() {
       </div>
       <Link
         href="/orders"
-        className="flex h-11 items-center gap-2 rounded-lg bg-espresso px-5 text-sm font-semibold text-white hover:bg-espresso/90"
+        className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-espresso px-5 text-sm font-semibold text-white hover:bg-espresso/90"
       >
         Proses Sekarang
         <ArrowRight size={16} />

@@ -61,7 +61,7 @@ export function PreOrderScreen() {
   }
 
   return (
-    <main className="flex flex-col gap-6 px-8 py-8">
+    <main className="flex flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-espresso">Jadwal &amp; Sesi Pre-Order</h1>
