@@ -16,6 +16,8 @@ import {
   TrendingDown,
   XCircle,
 } from 'lucide-react'
+import { ReceiptModal } from '@/app/components/ReceiptModal'
+import type { ReceiptData } from '@/app/components/ReceiptModal'
 import type { LucideIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { FilterDropdown } from './FilterDropdown'
@@ -82,7 +84,50 @@ function shortDate(iso: string): string {
   const [y = '', m = '1', d = '1'] = iso.split('-')
   return `${Number(d)} ${MONTH_SHORT[Number(m) - 1]} ${y}`
 }
+function toReceipt(r: HistoryRow): ReceiptData {
+  const total = Number(r.total.replace(/\./g, ''))
 
+  // "2x Americano + Croissant" -> dua item; tanpa angka di depan dianggap 1
+  const parsed = r.item.split(' + ').map((part) => {
+    const m = part.match(/^(\d+)x\s+(.*)$/)
+    return { qty: m ? Number(m[1]) : 1, name: m ? (m[2] ?? part) : part }
+  })
+  const totalQty = parsed.reduce((sum, p) => sum + p.qty, 0)
+  const unitPrice = total / totalQty // perkiraan: data riwayat belum punya harga per item
+
+  const isQris = r.pay === 'QRIS Instan'
+
+  return {
+    store: {
+      name: 'Yap Coffee',
+      branch: 'Kaftek Area Kampus UB',
+      address: 'Jl. MT Haryono No. 167, Dinoyo, Lowokwaru, Malang',
+      whatsapp: '+62 812-8921-9921',
+    },
+    receiptNo: `STRUK-${r.date.replace(/-/g, '')}-${r.id}`,
+    preOrderNo: `ORD-${r.id}`,
+    transactionAt: `${r.date}T${r.time}:00`,
+    customer: { name: r.name, phone: r.ph },
+    items: parsed.map((p, i) => ({
+      qty: p.qty,
+      name: p.name,
+      unitPrice,
+      // kustomisasi ditaruh di item pertama
+      lines: i === 0 ? r.mod.split(', ').map((value) => ({ label: 'Opsi', value })) : [],
+    })),
+    subtotal: total,
+    packagingFee: 0,
+    serviceFee: 0,
+    total,
+    paymentStatus: isQris ? 'Lunas via QRIS' : 'Lunas via Tunai',
+    payment: {
+      channel: r.pay,
+      rrn: '-', // belum ada di data
+      pickupSlot: `${r.spot} (08:30 - 10:00)`,
+      handover: 'Selesai',
+    },
+  }
+}
 // ─── Sub-components ───────────────────────────────────────────────────────────
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return <div className={`rounded-2xl border border-line bg-white shadow-card ${className}`}>{children}</div>
@@ -141,6 +186,7 @@ export function HistoryScreen() {
   const [month, setMonth] = useState(CURRENT_MONTH) // 'YYYY-MM' | 'semua'
   const [status, setStatus] = useState<StatusFilter>('selesai')
   const [page, setPage] = useState(1)
+  const [receipt, setReceipt] = useState<ReceiptData | null>(null)
 
   const shown = useMemo(() => {
     const keyword = q.toLowerCase()
@@ -378,10 +424,11 @@ export function HistoryScreen() {
                   </td>
                   <td className="px-3 py-6 text-right">
                     <button
-                      disabled={r.status === 'batal'}
+                        onClick={() => setReceipt(toReceipt(r))}
+                       disabled={r.status === 'batal'}
                       className="inline-flex items-center gap-1.5 rounded-md bg-sand px-3 py-2 text-[12px] font-semibold text-ink hover:bg-line disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-sand"
-                    >
-                      <FileText size={13} />Struk
+                        >
+                        <FileText size={13} />Struk
                     </button>
                   </td>
                 </tr>
@@ -432,6 +479,7 @@ export function HistoryScreen() {
           </div>
         </div>
       </Card>
+       <ReceiptModal receipt={receipt} onClose={() => setReceipt(null)} />   {/* ⬅️ tambah ini */}
     </main>
   )
 }

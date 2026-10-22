@@ -26,6 +26,7 @@ export interface PreOrderSchedule {
   date: string // 'YYYY-MM-DD'; hari & tanggal tampilan dihitung dari sini
   location: string
   locationDetail: string
+  mapsUrl?: string  
   pickupTime: string // '08:30 - 11:30 WIB'
   cutOff: string // '07:00 WIB' (tampilan menambah awalan "Cut-off: ")
   cutOffUrgent: boolean
