@@ -1,12 +1,7 @@
 import { ChevronDown, Search } from 'lucide-react'
-import { stockFilterOptions } from '@/lib/menu'
+import { stockFilterOptions } from '@/constants/menu'
 import type { MenuCategory, StockStatus } from '@/types/admin'
-
-export interface CategoryChip {
-  value: MenuCategory | 'semua'
-  label: string
-  count: number
-}
+import type { CategoryChip } from '@/types/menu'
 
 interface MenuToolbarProps {
   categories: CategoryChip[]

@@ -1,6 +1,6 @@
 import { Coffee, Cookie, Pencil, Trash2 } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
-import { getStockStatus } from '@/lib/menu'
+import { getStockStatus } from '@/utils/menu'
 import type { MenuItem, StockStatus } from '@/types/admin'
 
 const stockBadge: Record<StockStatus, string> = {
