@@ -1,64 +1,14 @@
 'use client'
 
 import { CirclePlus } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useSchedules } from '@/hooks/pre-order/useSchedules'
 import { DeleteScheduleModal } from './DeleteScheduleModal'
 import { ScheduleFormModal } from './ScheduleFormModal'
-import type { ScheduleFormValues } from './ScheduleFormModal'
 import { ScheduleTable } from './ScheduleTable'
-import { preOrderSchedules } from '@/data/dummy'
-import type { PreOrderSchedule } from '@/types/admin'
-
-type Dialog =
-  | { type: 'add' }
-  | { type: 'edit'; schedule: PreOrderSchedule }
-  | { type: 'delete'; schedule: PreOrderSchedule }
-  | null
-
-function sortSchedules(list: PreOrderSchedule[]): PreOrderSchedule[] {
-  return [...list].sort(
-    (a, b) => a.date.localeCompare(b.date) || a.pickupTime.localeCompare(b.pickupTime),
-  )
-}
 
 export function PreOrderScreen() {
-  const [schedules, setSchedules] = useState<PreOrderSchedule[]>(preOrderSchedules)
-  const [dialog, setDialog] = useState<Dialog>(null)
-
-  const closeDialog = useCallback(() => setDialog(null), [])
-
-  function addSchedule(values: ScheduleFormValues) {
-    setSchedules((prev) => {
-      const nextId = Math.max(0, ...prev.map((s) => s.id)) + 1
-      // "Simpan & Buka Jadwal": sesi baru langsung berstatus aktif.
-      const created: PreOrderSchedule = {
-        id: nextId,
-        ...values,
-        cutOffUrgent: false,
-        status: 'aktif',
-      }
-      return sortSchedules([...prev, created])
-    })
-    closeDialog()
-  }
-
-  function editSchedule(target: PreOrderSchedule, values: ScheduleFormValues) {
-    setSchedules((prev) =>
-      sortSchedules(
-        prev.map((s) =>
-          s.id === target.id
-            ? { ...s, ...values, cutOffUrgent: s.cutOff === values.cutOff ? s.cutOffUrgent : false }
-            : s,
-        ),
-      ),
-    )
-    closeDialog()
-  }
-
-  function deleteSchedule(target: PreOrderSchedule) {
-    setSchedules((prev) => prev.filter((s) => s.id !== target.id))
-    closeDialog()
-  }
+  const { schedules, dialog, setDialog, closeDialog, addSchedule, editSchedule, deleteSchedule } =
+    useSchedules()
 
   return (
     <main className="flex flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">

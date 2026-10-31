@@ -1,4 +1,4 @@
-export type MapsParseResult = { ok: true; embedUrl: string } | { ok: false; reason: string }
+import type { MapsParseResult } from '@/types/maps'
 
 const SHORT_LINK_REASON =
   'Link pendek (maps.app.goo.gl) belum bisa ditampilkan. Buka linknya di browser, lalu salin URL lengkap dari address bar.'

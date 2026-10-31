@@ -1,10 +1,4 @@
-import type {
-  DashboardOrder,
-  MenuItem,
-  PreOrderSchedule,
-  TopMenuItem,
-  WeeklyRevenuePoint,
-} from '@/types/admin'
+import type { DashboardOrder, MenuItem, PreOrderSchedule, TopMenuItem, WeeklyRevenuePoint } from '@/types/admin'
 
 // ---------- Umum (sidebar & topbar) ----------
 

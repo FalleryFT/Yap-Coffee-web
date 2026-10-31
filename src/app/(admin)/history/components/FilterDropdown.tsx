@@ -3,11 +3,7 @@
 import { Check, ChevronDown } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-
-export interface DropdownOption {
-  value: string
-  label: string
-}
+import type { DropdownOption } from '@/types/history'
 
 interface FilterDropdownProps {
   icon: LucideIcon

@@ -1,89 +1,18 @@
 'use client'
 
-import { ArrowRight, Coffee, Eye, EyeOff, LoaderCircle, Lock, User } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import type { FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
 import { CupIcon } from '@/app/components/CupIcon'
-import { Field } from './Field'
-import { toApiError } from '@/lib/apiError'
-import { tokenStorage } from '@/lib/tokenStorage'
-import { loginAdmin } from '@/services/authService'
-
-type FieldErrors = Partial<Record<'username' | 'password', string>>
+import { useLogin } from '@/hooks/login/useLogin'
+import { LoginBrand } from './LoginBrand'
+import { LoginForm } from './LoginForm'
 
 export function LoginScreen() {
-  const router = useRouter()
+  const login = useLogin()
 
-  // Dicek lewat useEffect (bukan langsung saat render) karena localStorage hanya ada
-  // di browser: Next.js merender komponen ini sekali di server dulu sebelum hidrasi,
-  // dan render pertama di server/klien harus menghasilkan HTML yang sama persis.
-  const [checkingSession, setCheckingSession] = useState(true)
-
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [formError, setFormError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
-
-  useEffect(() => {
-    // Sengaja: effect ini SEDANG mensinkronkan dengan sistem eksternal (localStorage),
-    // jadi setState di sini bukan anti-pattern meski linter menandainya. Nilainya tidak
-    // bisa dihitung langsung saat render karena localStorage tidak ada di server.
-    if (tokenStorage.get()) {
-      router.replace('/dashboard')
-      return
-    }
-    setCheckingSession(false)
-  }, [router])
-
-  if (checkingSession) return null
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (loading) return
-
-    // 1) Validasi di sisi klien
-    const errors: FieldErrors = {}
-    if (!username.trim()) errors.username = 'Username wajib diisi.'
-    if (!password) errors.password = 'Kata sandi wajib diisi.'
-    setFieldErrors(errors)
-    setFormError(null)
-    if (Object.keys(errors).length > 0) return
-
-    // 2) Kirim ke API
-    setLoading(true)
-    try {
-      const result = await loginAdmin({ username: username.trim(), password })
-      tokenStorage.set(result.token)
-      router.replace('/dashboard')
-    } catch (err) {
-      const apiError = toApiError(err)
-      const hasFieldErrors = Object.keys(apiError.fieldErrors).length > 0
-
-      setFieldErrors({
-        username: apiError.errorFor('username'),
-        password: apiError.errorFor('password'),
-      })
-      // Galat per kolom tampil di bawah input; selain itu tampil sebagai pesan umum.
-      setFormError(hasFieldErrors ? null : apiError.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  if (login.checkingSession) return null
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center px-4 py-8">
-      <header className="mb-8 text-center">
-        <div className="flex items-center justify-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-full bg-espresso text-white">
-            <Coffee size={20} aria-hidden />
-          </span>
-          <span className="text-[1.75rem] leading-none font-bold tracking-tight text-espresso">Yap Coffee</span>
-        </div>
-        <p className="mt-2 text-xs font-medium tracking-wide text-bark">ADMIN PORTAL</p>
-      </header>
+      <LoginBrand />
 
       <section className="w-full max-w-md rounded-2xl bg-white p-8 shadow-card">
         <div className="text-center">
@@ -97,67 +26,7 @@ export function LoginScreen() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-6">
-          <Field
-            id="username"
-            label="Username"
-            icon={<User size={20} aria-hidden />}
-            placeholder="Masukkan username admin"
-            autoComplete="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            error={fieldErrors.username}
-            disabled={loading}
-          />
-
-          <Field
-            id="password"
-            label="Kata Sandi"
-            type={showPassword ? 'text' : 'password'}
-            icon={<Lock size={20} aria-hidden />}
-            placeholder="••••••••"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={fieldErrors.password}
-            disabled={loading}
-            trailing={
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
-                aria-pressed={showPassword}
-                className="rounded p-1 text-bark hover:text-espresso focus-visible:ring-2 focus-visible:ring-espresso/40 focus-visible:outline-none"
-              >
-                {showPassword ? <EyeOff size={20} aria-hidden /> : <Eye size={20} aria-hidden />}
-              </button>
-            }
-          />
-
-          {formError && (
-            <p role="alert" className="rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger">
-              {formError}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 flex h-13 w-full items-center justify-center gap-2 rounded-lg bg-espresso text-lg font-semibold text-white shadow-lg shadow-espresso/25 transition hover:bg-espresso/90 focus-visible:ring-2 focus-visible:ring-espresso focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {loading ? (
-              <>
-                <LoaderCircle size={20} className="animate-spin" aria-hidden />
-                Memproses...
-              </>
-            ) : (
-              <>
-                Masuk ke Dashboard
-                <ArrowRight size={20} aria-hidden />
-              </>
-            )}
-          </button>
-        </form>
+        <LoginForm login={login} />
       </section>
 
       <footer className="mt-6 text-center text-xs text-bark">
