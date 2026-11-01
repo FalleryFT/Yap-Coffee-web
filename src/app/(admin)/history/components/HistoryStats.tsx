@@ -37,7 +37,7 @@ export function HistoryStats() {
         }
       />
       <MiniStat
-        label="Pendapatan Bersih Perbulan"
+        label="Pendapatan Perbulan"
         icon={Banknote}
         value={
           <span className="text-olive">
@@ -45,7 +45,7 @@ export function HistoryStats() {
             100.000.000
           </span>
         }
-        footer={<span>Pendapatan bersih bulan ini</span>}
+        footer={<span>Pendapatan bulan ini</span>}
       />
     </div>
   )

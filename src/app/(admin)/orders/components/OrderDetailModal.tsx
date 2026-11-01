@@ -64,119 +64,118 @@ export function OrderDetailModal({ order: o, onClose }: Props) {
           </IconBtn>
         </header>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-2">
-          {/* Kolom kiri: pelanggan + pesanan */}
-          <div className="space-y-5">
-            <Section icon={User} title="Pelanggan">
-              <dl>
-                <Row label="Nama">{o.name}</Row>
-                <Row label="WhatsApp">
-                  <a
-                    href={whatsappUrl(o.phone)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-espresso underline-offset-2 hover:underline"
-                  >
-                    {o.phone}
-                  </a>
-                </Row>
-                <Row label="Pembayaran">{o.pay}</Row>
-                {o.note && <Row label="Catatan">{o.note}</Row>}
-              </dl>
-            </Section>
+       <div className="mt-5 space-y-5">
+  {/* Baris 1: Pelanggan + Jadwal Pengambilan (2 kolom) */}
+  <div className="grid gap-5 md:grid-cols-2">
+    <Section icon={User} title="Pelanggan">
+      <dl>
+        <Row label="Nama">{o.name}</Row>
+        <Row label="WhatsApp">
+          <a
+            href={whatsappUrl(o.phone)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-espresso underline-offset-2 hover:underline"
+          >
+            {o.phone}
+          </a>
+        </Row>
+        <Row label="Pembayaran">{o.pay}</Row>
+        {o.note && <Row label="Catatan">{o.note}</Row>}
+      </dl>
+    </Section>
 
-            <Section icon={Receipt} title="Ringkasan Pesanan">
-              <ul>
-                {o.items.map((it) => (
-                  <li
-                    key={it.name}
-                    className="flex items-start justify-between gap-4 border-b border-line py-3 text-[14px]"
+    <Section icon={CalendarDays} title="Jadwal Pengambilan">
+      <dl>
+        <Row label="Kloter">{o.kloter.name}</Row>
+        <Row label="Tanggal">{describeDate(o.kloter.date).dateLong}</Row>
+        <Row label="Jam kloter">{o.kloter.hours} WIB</Row>
+        <Row label="Slot pickup">{o.window.replace(' - ', ' – ')} WIB</Row>
+      </dl>
+    </Section>
+  </div>
+
+  {/* Baris 2: Ringkasan Pesanan (full width) */}
+  <Section icon={Receipt} title="Ringkasan Pesanan">
+    <ul>
+      {o.items.map((it) => (
+        <li
+          key={it.name}
+          className="flex items-start justify-between gap-4 border-b border-line py-3 text-[14px]"
+        >
+          <div>
+            <div className="font-medium text-ink">
+              <span className="mr-1.5 text-espresso">{it.qty}x</span>
+              {it.name}
+            </div>
+            {it.mods.length > 0 && (
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {it.mods.map((m) => (
+                  <span
+                    key={m}
+                    className="rounded-md bg-sand px-2 py-0.5 text-[11px] font-medium text-espresso"
                   >
-                    <div>
-                      <div className="font-medium text-ink">
-                        <span className="mr-1.5 text-espresso">{it.qty}x</span>
-                        {it.name}
-                      </div>
-                      {it.mods.length > 0 && (
-                        <div className="mt-1.5 flex flex-wrap gap-1.5">
-                          {it.mods.map((m) => (
-                            <span
-                              key={m}
-                              className="rounded-md bg-sand px-2 py-0.5 text-[11px] font-medium text-espresso"
-                            >
-                              {m}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <span className="shrink-0 text-bark">{rp(it.price)}</span>
-                  </li>
+                    {m}
+                  </span>
                 ))}
-              </ul>
-
-              <dl className="py-3 text-[14px]">
-                <div className="flex justify-between py-1 text-bark">
-                  <dt>Subtotal menu</dt>
-                  <dd>{rp(subtotal)}</dd>
-                </div>
-                {extra > 0 && (
-                  <div className="flex justify-between py-1 text-bark">
-                    <dt>Add-on &amp; biaya lain</dt>
-                    <dd>{rp(extra)}</dd>
-                  </div>
-                )}
-                <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
-                  <dt className="font-semibold text-ink">Total</dt>
-                  <dd className="text-[20px] font-bold text-espresso">{rp(o.total)}</dd>
-                </div>
-              </dl>
-            </Section>
-          </div>
-
-          {/* Kolom kanan: jadwal + titik temu */}
-          <div className="space-y-5">
-            <Section icon={CalendarDays} title="Jadwal Pengambilan">
-              <dl>
-                <Row label="Kloter">{o.kloter.name}</Row>
-                <Row label="Tanggal">{describeDate(o.kloter.date).dateLong}</Row>
-                <Row label="Jam kloter">{o.kloter.hours} WIB</Row>
-                <Row label="Slot pickup">{o.window.replace(' - ', ' – ')} WIB</Row>
-              </dl>
-            </Section>
-
-            <Section icon={MapPin} title="Titik Temu Pengambilan">
-              <dl>
-                <Row label="Lokasi">{o.pickup.name}</Row>
-                <Row label="Detail">{o.pickup.detail}</Row>
-                <Row label="Area">{o.pickup.area}</Row>
-                <Row label="Patokan rute">
-                  <span className="font-normal leading-relaxed text-bark">{o.pickup.route}</span>
-                </Row>
-              </dl>
-              <div className="flex flex-wrap gap-2 pb-3 pt-1">
-                <a
-                  href={mapsSearchUrl(o.pickup.mapsQuery)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${linkBtn} bg-sand text-espresso hover:bg-line`}
-                >
-                  <ExternalLink size={15} />
-                  Buka di Google Maps
-                </a>
-                <a
-                  href={mapsDirectionsUrl(o.pickup.mapsQuery)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${linkBtn} bg-espresso text-white hover:bg-espresso/90`}
-                >
-                  <Navigation size={15} />
-                  Penunjuk Arah
-                </a>
               </div>
-            </Section>
+            )}
           </div>
+          <span className="shrink-0 text-bark">{rp(it.price)}</span>
+        </li>
+      ))}
+    </ul>
+
+    <dl className="py-3 text-[14px]">
+      <div className="flex justify-between py-1 text-bark">
+        <dt>Subtotal menu</dt>
+        <dd>{rp(subtotal)}</dd>
+      </div>
+      {extra > 0 && (
+        <div className="flex justify-between py-1 text-bark">
+          <dt>Add-on &amp; biaya lain</dt>
+          <dd>{rp(extra)}</dd>
         </div>
+      )}
+      <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
+        <dt className="font-semibold text-ink">Total</dt>
+        <dd className="text-[20px] font-bold text-espresso">{rp(o.total)}</dd>
+      </div>
+    </dl>
+  </Section>
+
+  {/* Baris 3: Titik Temu (full width) */}
+  <Section icon={MapPin} title="Titik Temu Pengambilan">
+    <dl>
+      <Row label="Lokasi">{o.pickup.name}</Row>
+      <Row label="Detail">{o.pickup.detail}</Row>
+      <Row label="Area">{o.pickup.area}</Row>
+      <Row label="Patokan rute">
+        <span className="font-normal leading-relaxed text-bark">{o.pickup.route}</span>
+      </Row>
+    </dl>
+    <div className="flex flex-wrap gap-2 pb-3 pt-1">
+      <a
+        href={mapsSearchUrl(o.pickup.mapsQuery)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${linkBtn} bg-sand text-espresso hover:bg-line`}
+      >
+        <ExternalLink size={15} />
+        Buka di Google Maps
+      </a>
+      <a
+        href={mapsDirectionsUrl(o.pickup.mapsQuery)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${linkBtn} bg-espresso text-white hover:bg-espresso/90`}
+      >
+        <Navigation size={15} />
+        Penunjuk Arah
+      </a>
+    </div>
+  </Section>
+</div>
 
         <div className="mt-5 flex justify-end border-t border-line pt-5">
           <Btn variant="ghost" onClick={onClose}>

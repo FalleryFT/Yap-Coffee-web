@@ -16,7 +16,7 @@ export function OrderTable({ orders, page, onPage, onDetail, onStatus, onCancel 
   return (
     <Card className="overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[980px] border-collapse">
+        <table className="w-full min-w-[980px] border-collapse [&_th]:text-left [&_td]:text-left">
           <thead className="border-b border-line bg-sand/70">
             <tr>
               <Th>Pesanan</Th>
