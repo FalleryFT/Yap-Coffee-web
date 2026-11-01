@@ -83,7 +83,7 @@ export const seed: Order[] = [
     kloter,
     pickup,
     total: 35000,
-    pay: 'Tunai Terbayar',
+    pay: 'QRIS Lunas',
     status: 'Selesai',
   },
 ]
