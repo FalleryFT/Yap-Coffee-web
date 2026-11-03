@@ -19,6 +19,8 @@ export interface PickupPoint {
   area: string
   mapsQuery: string
   route: string
+  /** Tautan Google Maps dari jadwal; dipakai bila ada, selain membangun dari mapsQuery. */
+  mapsUrl?: string
 }
 
 export interface Order {
@@ -33,7 +35,33 @@ export interface Order {
   kloter: OrderKloter
   pickup: PickupPoint
   note?: string
+  // Rincian biaya dan status bayar; hanya ada pada data dari API (tidak ada di data dummy).
+  subtotal?: number
+  tax?: number
+  serviceFee?: number
+  packagingFee?: number
   total: number
   pay: string
+  paid?: boolean
   status: OrderStatus
+}
+
+/** Satu halaman daftar pesanan dari GET /admin/orders. */
+export interface OrderPage {
+  items: Order[]
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+/** Data kartu statistik dan badge tab dari GET /admin/orders/stats. */
+export interface OrderStatsData {
+  today: {
+    count: number
+    lastWeekCount: number
+    /** Persen dibanding hari yang sama minggu lalu; null bila minggu lalu kosong. */
+    changePercent: number | null
+  }
+  active: { semua: number; baruMasuk: number; diproses: number; siapAmbil: number }
 }

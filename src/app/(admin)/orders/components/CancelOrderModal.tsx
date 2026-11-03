@@ -11,11 +11,15 @@ interface Props {
   onReason: (reason: string) => void
   extra: string
   onExtra: (extra: string) => void
+  submitting: boolean
+  error: string | null
   onClose: () => void
   onConfirm: () => void
 }
 
-export function CancelOrderModal({ order, reason, onReason, extra, onExtra, onClose, onConfirm }: Props) {
+export function CancelOrderModal({
+  order, reason, onReason, extra, onExtra, submitting, error, onClose, onConfirm,
+}: Props) {
   const titleId = useId()
 
   return (
@@ -62,10 +66,19 @@ export function CancelOrderModal({ order, reason, onReason, extra, onExtra, onCl
           />
         </div>
 
+        {error && (
+          <p role="alert" className="mt-4 text-[13px] text-danger">{error}</p>
+        )}
+
         <div className="mt-5 flex justify-end gap-3 border-t border-line pt-5">
-          <Btn variant="ghost" onClick={onClose}>Kembali</Btn>
-          <Btn variant="danger" onClick={onConfirm}>
-            <XCircle size={15} />Ya, Batalkan &amp; Refund
+          <Btn variant="ghost" onClick={onClose} disabled={submitting}>Kembali</Btn>
+          <Btn
+            variant="danger"
+            onClick={onConfirm}
+            disabled={submitting}
+            className="disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <XCircle size={15} />{submitting ? 'Membatalkan…' : <>Ya, Batalkan &amp; Refund</>}
           </Btn>
         </div>
       </div>

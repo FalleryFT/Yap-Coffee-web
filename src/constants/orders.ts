@@ -1,4 +1,7 @@
-import type { OrderStatus } from '@/types/orders'
+import type { OrderStatus, OrderStatsData } from '@/types/orders'
+
+// Jumlah pesanan per halaman di tabel Orders
+export const ORDERS_PAGE_SIZE = 20
 
 // Daftar pilihan di dropdown status (tanpa "Dibatalkan")
 export const flow: OrderStatus[] = ['Baru Masuk', 'Diproses', 'Siap Ambil', 'Selesai']
@@ -34,15 +37,21 @@ export const reasons = [
   'Lainnya',
 ]
 
-export const filters: [string, string][] = [
-  ['Semua', '33'],
-  ['Baru Masuk', '6'],
-  ['Diproses', '9'],
-  ['Siap Diambil', '14'],
+// Tab di toolbar: `status` = filter yang dikirim ke API, `count` = kunci jumlahnya di stats.active
+export const tabs: {
+  label: string
+  status?: OrderStatus
+  count: keyof OrderStatsData['active']
+}[] = [
+  { label: 'Semua', count: 'semua' },
+  { label: 'Baru Masuk', status: 'Baru Masuk', count: 'baruMasuk' },
+  { label: 'Diproses', status: 'Diproses', count: 'diproses' },
+  { label: 'Siap Diambil', status: 'Siap Ambil', count: 'siapAmbil' },
 ]
 
+// [judul kartu, kunci jumlah di stats.active, keterangan]
 export const statCards = [
-  ['Baru Masuk', '6', 'Perlu konfirmasi barista'],
-  ['Sedang Diproses', '9', 'Di bar espresso & manual'],
-  ['Siap Diambil', '14', 'Di pick-up counter meja 1'],
+  ['Baru Masuk', 'baruMasuk', 'Perlu konfirmasi barista'],
+  ['Sedang Diproses', 'diproses', 'Di bar espresso & manual'],
+  ['Siap Diambil', 'siapAmbil', 'Di pick-up counter meja 1'],
 ] as const
