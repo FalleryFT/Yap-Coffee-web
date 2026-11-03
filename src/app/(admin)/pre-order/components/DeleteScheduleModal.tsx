@@ -1,19 +1,34 @@
 'use client'
 
 import { CalendarX, Clock, MapPin, TriangleAlert, X } from 'lucide-react'
-import { useId } from 'react'
+import { useId, useState } from 'react'
+import { toApiError } from '@/lib/apiError'
 import { describeDate } from '@/lib/format'
 import type { PreOrderSchedule } from '@/types/admin'
 import { Modal } from '@/app/components/Modal'
 
 interface DeleteScheduleModalProps {
   schedule: PreOrderSchedule
-  onConfirm: () => void
+  onConfirm: () => Promise<void>
   onClose: () => void
 }
 
 export function DeleteScheduleModal({ schedule, onConfirm, onClose }: DeleteScheduleModalProps) {
   const titleId = useId()
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Saat sukses, dialog ditutup oleh useSchedules; saat gagal, pesan server ditampilkan di sini.
+  async function confirm() {
+    setDeleting(true)
+    setError(null)
+    try {
+      await onConfirm()
+    } catch (err) {
+      setError(toApiError(err).message)
+      setDeleting(false)
+    }
+  }
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} widthClass="max-w-lg">
@@ -63,6 +78,12 @@ export function DeleteScheduleModal({ schedule, onConfirm, onClose }: DeleteSche
         </p>
       </div>
 
+      {error && (
+        <p role="alert" className="mt-4 rounded-lg bg-danger-soft px-4 py-3 text-[13px] text-danger">
+          {error}
+        </p>
+      )}
+
       <footer className="mt-6 flex justify-end gap-3">
         <button
           type="button"
@@ -73,8 +94,9 @@ export function DeleteScheduleModal({ schedule, onConfirm, onClose }: DeleteSche
         </button>
         <button
           type="button"
-          onClick={onConfirm}
-          className="flex h-11 items-center gap-2 rounded-lg bg-danger px-5 text-sm font-semibold text-white hover:bg-danger/90"
+          onClick={confirm}
+          disabled={deleting}
+          className="flex h-11 items-center gap-2 rounded-lg bg-danger px-5 text-sm font-semibold text-white hover:bg-danger/90 disabled:opacity-50"
         >
           <CalendarX size={16} />
           Ya, Hapus Jadwal
