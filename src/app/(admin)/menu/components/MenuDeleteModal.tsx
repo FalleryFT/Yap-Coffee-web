@@ -1,7 +1,8 @@
 'use client'
 
 import { AlertTriangle, Coffee, Cookie, Info, Trash2, X } from 'lucide-react'
-import { useCallback, useId } from 'react'
+import { useCallback, useId, useState } from 'react'
+import { toApiError } from '@/lib/apiError'
 import { Modal } from '@/app/components/Modal'
 import { formatNumber } from '@/lib/format'
 import { getStockStatus } from '@/utils/menu'
@@ -10,7 +11,7 @@ import type { MenuItem } from '@/types/admin'
 interface MenuDeleteModalProps {
   item: MenuItem
   onClose: () => void
-  onConfirm: (item: MenuItem) => void
+  onConfirm: (item: MenuItem) => Promise<void>
 }
 
 const stockLabel: Record<string, string> = {
@@ -21,9 +22,23 @@ const stockLabel: Record<string, string> = {
 
 export function MenuDeleteModal({ item, onClose, onConfirm }: MenuDeleteModalProps) {
   const titleId = useId()
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const stableClose = useCallback(() => onClose(), [onClose])
   const status = getStockStatus(item.stock)
   const PlaceholderIcon = item.category === 'Makanan Ringan' ? Cookie : Coffee
+
+  async function confirm() {
+    setDeleting(true)
+    setError(null)
+    try {
+      await onConfirm(item)
+      onClose()
+    } catch (err) {
+      setError(toApiError(err).message)
+      setDeleting(false)
+    }
+  }
 
   return (
     <Modal labelledBy={titleId} onClose={stableClose} widthClass="max-w-[440px]">
@@ -99,6 +114,12 @@ export function MenuDeleteModal({ item, onClose, onConfirm }: MenuDeleteModalPro
         </div>
       </div>
 
+      {error && (
+        <p role="alert" className="mt-4 rounded-lg bg-danger-soft px-4 py-3 text-[13px] text-danger">
+          {error}
+        </p>
+      )}
+
       {/* ── Footer ── */}
       <div className="mt-6 flex justify-end gap-3 border-t border-line pt-5">
         <button
@@ -108,8 +129,9 @@ export function MenuDeleteModal({ item, onClose, onConfirm }: MenuDeleteModalPro
           Batal
         </button>
         <button
-          onClick={() => { onConfirm(item); onClose() }}
-          className="flex items-center gap-2 rounded-lg bg-danger px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-red-800"
+          onClick={confirm}
+          disabled={deleting}
+          className="flex items-center gap-2 rounded-lg bg-danger px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-red-800 disabled:opacity-50"
         >
           <Trash2 size={16} />
           Ya, Hapus Menu

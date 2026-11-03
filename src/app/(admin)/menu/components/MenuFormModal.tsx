@@ -19,7 +19,7 @@ interface MenuFormModalProps {
   /** item yang sedang di-edit (harus ada saat mode='edit') */
   item?: MenuItem
   onClose: () => void
-  onSave: (data: Partial<MenuItem>) => void
+  onSave: (data: Partial<MenuItem>) => Promise<void>
 }
 
 export function MenuFormModal({ mode, item, onClose, onSave }: MenuFormModalProps) {
@@ -54,7 +54,13 @@ export function MenuFormModal({ mode, item, onClose, onSave }: MenuFormModalProp
         )}
       </div>
 
-      <MenuFormFooter isEdit={isEdit} canSave={Boolean(form.name)} onClose={onClose} onSave={form.handleSave} />
+      {form.error && (
+        <p role="alert" className="mt-4 rounded-lg bg-danger-soft px-4 py-3 text-[13px] text-danger">
+          {form.error}
+        </p>
+      )}
+
+      <MenuFormFooter isEdit={isEdit} canSave={Boolean(form.name) && !form.saving} onClose={onClose} onSave={form.handleSave} />
     </Modal>
   )
 }
