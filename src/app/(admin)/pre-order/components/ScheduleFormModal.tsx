@@ -22,7 +22,7 @@ interface ScheduleFormModalProps {
   mode: 'add' | 'edit'
   /** Wajib diisi saat mode 'edit'. */
   schedule?: PreOrderSchedule
-  onSubmit: (values: ScheduleFormValues) => void
+  onSubmit: (values: ScheduleFormValues) => Promise<void>
   onClose: () => void
 }
 
@@ -50,6 +50,12 @@ export function ScheduleFormModal({ mode, schedule, onSubmit, onClose }: Schedul
               />
             </div>
 
+            {form.submitError && (
+              <p role="alert" className="mt-4 rounded-lg bg-danger-soft px-4 py-3 text-[13px] text-danger">
+                {form.submitError}
+              </p>
+            )}
+
             <footer className="mt-6 flex justify-end gap-3 border-t border-line pt-4">
               <button
                 type="button"
@@ -60,10 +66,11 @@ export function ScheduleFormModal({ mode, schedule, onSubmit, onClose }: Schedul
               </button>
               <button
                 type="submit"
-                className="flex h-11 items-center gap-2 rounded-lg bg-espresso px-5 text-sm font-semibold text-white hover:bg-espresso/90"
+                disabled={form.saving}
+                className="flex h-11 items-center gap-2 rounded-lg bg-espresso px-5 text-sm font-semibold text-white hover:bg-espresso/90 disabled:opacity-50"
               >
                 <CircleCheck size={16} />
-                {isEdit ? 'Simpan Perubahan' : 'Simpan & Buka Jadwal'}
+                {form.saving ? 'Menyimpan…' : isEdit ? 'Simpan Perubahan' : 'Simpan & Buka Jadwal'}
               </button>
             </footer>
           </form>

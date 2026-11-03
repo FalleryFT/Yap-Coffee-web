@@ -7,8 +7,11 @@ import { ScheduleFormModal } from './ScheduleFormModal'
 import { ScheduleTable } from './ScheduleTable'
 
 export function PreOrderScreen() {
-  const { schedules, dialog, setDialog, closeDialog, addSchedule, editSchedule, deleteSchedule } =
-    useSchedules()
+  const {
+    schedules, loading, loadError, reload,
+    dialog, setDialog, closeDialog,
+    addSchedule, editSchedule, deleteSchedule,
+  } = useSchedules()
 
   return (
     <main className="flex flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
@@ -29,11 +32,27 @@ export function PreOrderScreen() {
         </button>
       </header>
 
-      <ScheduleTable
-        schedules={schedules}
-        onEdit={(schedule) => setDialog({ type: 'edit', schedule })}
-        onDelete={(schedule) => setDialog({ type: 'delete', schedule })}
-      />
+      {loading ? (
+        <p className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm text-mist">
+          Memuat jadwal…
+        </p>
+      ) : loadError ? (
+        <div className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm">
+          <p className="text-danger">{loadError}</p>
+          <button
+            onClick={reload}
+            className="mt-4 rounded-lg bg-espresso px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-espresso/90"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      ) : (
+        <ScheduleTable
+          schedules={schedules}
+          onEdit={(schedule) => setDialog({ type: 'edit', schedule })}
+          onDelete={(schedule) => setDialog({ type: 'delete', schedule })}
+        />
+      )}
 
       {dialog?.type === 'add' && (
         <ScheduleFormModal mode="add" onSubmit={addSchedule} onClose={closeDialog} />

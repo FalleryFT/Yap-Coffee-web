@@ -1,17 +1,24 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
+import { toApiError } from '@/lib/apiError'
 import { parseGoogleMapsUrl } from '@/lib/maps'
 import type { PreOrderSchedule } from '@/types/admin'
 import { toState, toSubmitValues, validate } from '@/utils/scheduleForm'
 import type { Errors, FormState, ScheduleFormValues } from '@/types/preOrder'
 
+const FORM_KEYS: (keyof FormState)[] = [
+  'name', 'date', 'location', 'locationDetail', 'mapsUrl', 'pickupStart', 'pickupEnd', 'cutOffTime',
+]
+
 export function useScheduleForm(
   schedule: PreOrderSchedule | undefined,
-  onSubmit: (values: ScheduleFormValues) => void,
+  onSubmit: (values: ScheduleFormValues) => Promise<void>,
 ) {
   const isEdit = schedule !== undefined
   const [values, setValues] = useState<FormState>(() => toState(schedule))
   const [errors, setErrors] = useState<Errors>({})
+  const [saving, setSaving] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   function update(key: keyof FormState, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }))
@@ -25,13 +32,31 @@ export function useScheduleForm(
   )
   const mapsError = errors.mapsUrl ?? (mapsResult && !mapsResult.ok ? mapsResult.reason : undefined)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (saving) return
     const found = validate(values, isEdit)
     setErrors(found)
+    setSubmitError(null)
     if (Object.keys(found).length > 0) return
-    onSubmit(toSubmitValues(values))
+
+    setSaving(true)
+    try {
+      await onSubmit(toSubmitValues(values))
+      // Saat sukses, dialog ditutup oleh useSchedules sehingga modal ini langsung dilepas.
+    } catch (err) {
+      const apiError = toApiError(err)
+      // Galat validasi dari server dipetakan ke kolom yang sama dengan form.
+      const serverErrors: Errors = {}
+      for (const key of FORM_KEYS) {
+        const message = apiError.errorFor(key)
+        if (message) serverErrors[key] = message
+      }
+      setErrors(serverErrors)
+      setSubmitError(apiError.message)
+      setSaving(false)
+    }
   }
 
-  return { values, errors, update, mapsResult, mapsError, handleSubmit }
-} 
+  return { values, errors, update, mapsResult, mapsError, saving, submitError, handleSubmit }
+}
