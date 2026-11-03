@@ -5,17 +5,21 @@ import { Card, Th } from './ui'
 
 interface Props {
   orders: Order[]
+  loading: boolean
   page: number
+  totalPages: number
+  total: number
   onPage: (page: number) => void
   onDetail: (order: Order) => void
   onStatus: (id: string, status: OrderStatus) => void
   onCancel: (order: Order) => void
 }
 
-export function OrderTable({ orders, page, onPage, onDetail, onStatus, onCancel }: Props) {
+export function OrderTable({ orders, loading, page, totalPages, total, onPage, onDetail, onStatus, onCancel }: Props) {
   return (
     <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Baris lama tetap tampil (agak pudar) saat memuat ulang, supaya tabel tidak berkedip. */}
+      <div className={`overflow-x-auto transition-opacity ${loading ? 'opacity-60' : ''}`} aria-busy={loading}>
         <table className="w-full min-w-[980px] border-collapse [&_th]:text-left [&_td]:text-left">
           <thead className="border-b border-line bg-sand/70">
             <tr>
@@ -35,7 +39,7 @@ export function OrderTable({ orders, page, onPage, onDetail, onStatus, onCancel 
             {orders.length === 0 && (
               <tr>
                 <td colSpan={7} className="py-16 text-center text-bark">
-                  Tidak ada pesanan pada filter ini.
+                  {loading ? 'Memuat pesanan…' : 'Tidak ada pesanan pada filter ini.'}
                 </td>
               </tr>
             )}
@@ -43,7 +47,7 @@ export function OrderTable({ orders, page, onPage, onDetail, onStatus, onCancel 
         </table>
       </div>
 
-      <OrderPagination shown={orders.length} page={page} onPage={onPage} />
+      <OrderPagination shown={orders.length} total={total} page={page} totalPages={totalPages} onPage={onPage} />
     </Card>
   )
 }

@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronDown, CircleX, Eye } from 'lucide-react'
+import { CheckCircle2, ChevronDown, CircleX, Clock, Eye} from 'lucide-react'
 import { flow, pill } from '@/constants/orders'
 import type { Order, OrderStatus } from '@/types/orders'
 import { shortDate } from '@/utils/history'
@@ -50,18 +50,21 @@ export function OrderRow({ order: o, onStatus, onDetail, onCancel }: Props) {
       {/* Pembayaran */}
       <td className="whitespace-nowrap px-4 py-3.5">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-sand px-2.5 py-1 text-[12px] text-espresso">
-          <CheckCircle2 size={12} />
+          {o.paid === false ? <Clock size={12} /> : <CheckCircle2 size={12} />}
           {o.pay}
         </span>
       </td>
 
       {/* Status (dropdown pill) */}
       <td className="whitespace-nowrap px-4 py-3.5">
-        {o.status === 'Dibatalkan' ? (
+        {done ? (
+          // Selesai dan Dibatalkan final: tampil sebagai label, bukan dropdown.
           <span
-            className={`inline-flex h-9 min-w-[140px] items-center justify-center rounded-full px-4 text-[13px] font-semibold ${pill.Dibatalkan}`}
+            title={o.status === 'Selesai' ? 'Pesanan selesai tidak dapat diubah' : undefined}
+            className={`inline-flex h-9 min-w-[140px] items-center justify-center gap-1.5 rounded-full px-4 text-[13px] font-semibold ${pill[o.status]}`}
           >
-            Dibatalkan
+            {o.status === 'Selesai'}
+            {o.status}
           </span>
         ) : (
           <div className="relative inline-block">

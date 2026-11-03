@@ -98,9 +98,9 @@ export function OrderDetailModal({ order: o, onClose }: Props) {
   {/* Baris 2: Ringkasan Pesanan (full width) */}
   <Section icon={Receipt} title="Ringkasan Pesanan">
     <ul>
-      {o.items.map((it) => (
+      {o.items.map((it, i) => (
         <li
-          key={it.name}
+          key={`${it.name}-${i}`}
           className="flex items-start justify-between gap-4 border-b border-line py-3 text-[14px]"
         >
           <div>
@@ -148,15 +148,17 @@ export function OrderDetailModal({ order: o, onClose }: Props) {
   <Section icon={MapPin} title="Titik Temu Pengambilan">
     <dl>
       <Row label="Lokasi">{o.pickup.name}</Row>
-      <Row label="Detail">{o.pickup.detail}</Row>
-      <Row label="Area">{o.pickup.area}</Row>
-      <Row label="Patokan rute">
-        <span className="font-normal leading-relaxed text-bark">{o.pickup.route}</span>
-      </Row>
+      {o.pickup.detail && <Row label="Detail">{o.pickup.detail}</Row>}
+      {o.pickup.area && <Row label="Area">{o.pickup.area}</Row>}
+      {o.pickup.route && (
+        <Row label="Patokan rute">
+          <span className="font-normal leading-relaxed text-bark">{o.pickup.route}</span>
+        </Row>
+      )}
     </dl>
     <div className="flex flex-wrap gap-2 pb-3 pt-1">
       <a
-        href={mapsSearchUrl(o.pickup.mapsQuery)}
+        href={o.pickup.mapsUrl ?? mapsSearchUrl(o.pickup.mapsQuery)}
         target="_blank"
         rel="noopener noreferrer"
         className={`${linkBtn} bg-sand text-espresso hover:bg-line`}

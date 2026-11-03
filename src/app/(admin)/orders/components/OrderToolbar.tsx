@@ -1,9 +1,11 @@
 import { ChevronDown, RefreshCw, Search } from 'lucide-react'
-import { filters, flow } from '@/constants/orders'
-import type { OrderStatus } from '@/types/orders'
+import { flow, tabs } from '@/constants/orders'
+import type { OrderStatsData, OrderStatus } from '@/types/orders'
 import { Card } from './ui'
 
 interface Props {
+  /** Jumlah pesanan aktif untuk badge tab; null selama statistik belum dimuat. */
+  counts: OrderStatsData['active'] | null
   tab: string
   onTab: (tab: string) => void
   query: string
@@ -13,21 +15,21 @@ interface Props {
   onReload: () => void
 }
 
-export function OrderToolbar({ tab, onTab, query, onQuery, statusFilter, onStatusFilter, onReload }: Props) {
+export function OrderToolbar({ counts, tab, onTab, query, onQuery, statusFilter, onStatusFilter, onReload }: Props) {
   return (
     <Card className="flex flex-wrap items-center gap-3 p-4">
       <div className="no-scrollbar flex min-w-0 flex-1 gap-2 overflow-x-auto" role="tablist">
-        {filters.map(([n, c]) => (
+        {tabs.map(({ label, count }) => (
           <button
-            key={n}
+            key={label}
             role="tab"
-            aria-selected={tab === n}
-            onClick={() => onTab(n)}
+            aria-selected={tab === label}
+            onClick={() => onTab(label)}
             className={`shrink-0 rounded-full px-5 py-2.5 text-[14px] font-medium transition-colors ${
-              tab === n ? 'bg-espresso text-white' : 'bg-sand text-ink hover:bg-line'
+              tab === label ? 'bg-espresso text-white' : 'bg-sand text-ink hover:bg-line'
             }`}
           >
-            {n} ({c})
+            {label}{counts && ` (${counts[count]})`}
           </button>
         ))}
       </div>
