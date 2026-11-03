@@ -28,7 +28,21 @@ export function MenuScreen() {
         onStockChange={menu.setStock}
       />
 
-      {menu.visible.length === 0 ? (
+      {menu.loading ? (
+        <p className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm text-mist">
+          Memuat menu…
+        </p>
+      ) : menu.loadError ? (
+        <div className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm">
+          <p className="text-danger">{menu.loadError}</p>
+          <button
+            onClick={menu.reload}
+            className="mt-4 rounded-lg bg-espresso px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-espresso/90"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      ) : menu.visible.length === 0 ? (
         <p className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm text-mist">
           Tidak ada menu yang cocok dengan filter ini.
         </p>
