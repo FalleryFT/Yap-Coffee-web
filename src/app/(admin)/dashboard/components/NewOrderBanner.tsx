@@ -1,23 +1,26 @@
 import { ArrowRight, BellRing } from 'lucide-react'
 import Link from 'next/link'
-import { newOrderAlert } from '@/data/dummy'
+import type { NewOrderAlert } from '@/types/dashboard'
 
 function joinNames(names: string[]): string {
   if (names.length <= 1) return names.join('')
   return `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`
 }
 
-export function NewOrderBanner() {
+export function NewOrderBanner({ alert }: { alert: NewOrderAlert }) {
+  // Backend hanya mengirim beberapa nama pertama; sisanya diringkas.
+  const hasMore = alert.count > alert.customers.length
+
   return (
     <section className="flex flex-col gap-4 rounded-xl border border-honey border-l-4 border-l-mocha bg-peach p-4 sm:flex-row sm:items-center">
       <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-mocha text-white">
         <BellRing size={22} strokeWidth={1.75} />
       </span>
       <div className="min-w-0 flex-1 text-sm leading-relaxed text-mocha">
-        <p className="font-bold text-espresso">{newOrderAlert.count} Pesanan Baru Masuk!</p>
+        <p className="font-bold text-espresso">{alert.count} Pesanan Baru Masuk!</p>
         <p>
-          Pesanan batch jam pickup {newOrderAlert.pickupTime} oleh{' '}
-          {joinNames(newOrderAlert.customers)}.
+          Pesanan batch jam pickup {alert.pickupTime} oleh {joinNames(alert.customers)}
+          {hasMore ? ' dan lainnya' : ''}.
         </p>
       </div>
       <Link

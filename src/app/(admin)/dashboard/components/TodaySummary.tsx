@@ -4,12 +4,14 @@ import {
   CircleCheck,
   Receipt,
   ShoppingBag,
+  TrendingDown,
   TrendingUp,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { todaySummary } from '@/data/dummy'
 import { formatNumber } from '@/lib/format'
+import type { TodaySummaryData } from '@/types/dashboard'
+import { formatTrend } from '@/utils/dashboard'
 
 interface StatCardProps {
   label: string
@@ -35,8 +37,31 @@ function StatCard({ label, icon: Icon, iconClass, value, valueClass, footer }: S
   )
 }
 
-export function TodaySummary() {
-  const s = todaySummary
+// Ditampilkan selama data pertama belum datang.
+const EMPTY: TodaySummaryData = {
+  totalOrders: 0,
+  trendPercent: null,
+  readyForPickup: 0,
+  completed: 0,
+  onTimePercent: null,
+  revenue: 0,
+  averagePerOrder: 0,
+}
+
+function TrendFooter({ percent }: { percent: number | null }) {
+  if (percent === null) return <span>Belum ada pembanding kemarin</span>
+  const { text, up } = formatTrend(percent)
+  const Icon = up ? TrendingUp : TrendingDown
+  return (
+    <>
+      <Icon size={14} className={up ? 'text-olive' : 'text-danger'} />
+      <span>{text} dibanding kemarin</span>
+    </>
+  )
+}
+
+export function TodaySummary({ summary }: { summary: TodaySummaryData | null }) {
+  const s = summary ?? EMPTY
 
   return (
     <section>
@@ -54,12 +79,7 @@ export function TodaySummary() {
           icon={Receipt}
           iconClass="bg-sand text-bark"
           value={s.totalOrders}
-          footer={
-            <>
-              <TrendingUp size={14} className="text-olive" />
-              <span>+{s.trendPercent}% dibanding kemarin</span>
-            </>
-          }
+          footer={<TrendFooter percent={s.trendPercent} />}
         />
         <StatCard
           label="Siap Ambil (Pickup)"
@@ -81,10 +101,14 @@ export function TodaySummary() {
           value={s.completed}
           valueClass="text-olive"
           footer={
-            <>
-              <CircleCheck size={14} className="text-olive" />
-              <span>{s.onTimePercent}% tepat waktu</span>
-            </>
+            s.onTimePercent === null ? (
+              <span>Belum ada pesanan selesai</span>
+            ) : (
+              <>
+                <CircleCheck size={14} className="text-olive" />
+                <span>{s.onTimePercent}% tepat waktu</span>
+              </>
+            )
           }
         />
         <StatCard

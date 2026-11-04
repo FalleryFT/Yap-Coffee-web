@@ -1,4 +1,4 @@
-import { weeklyRevenue } from '@/data/dummy'
+import type { WeeklyRevenuePoint } from '@/types/admin'
 
 export const TICK_COUNT = 4
 
@@ -10,8 +10,8 @@ export function compact(value: number): string {
   return `${Math.round(value / 1000)} rb`
 }
 
-export function useWeeklyRevenue() {
-  const data = weeklyRevenue
+/** Menghitung total, rata-rata, dan skala sumbu Y dari titik pendapatan yang datang dari API. */
+export function useWeeklyRevenue(data: WeeklyRevenuePoint[]) {
   const filled = data.filter((d) => d.revenue !== null)
   const total = filled.reduce((sum, d) => sum + (d.revenue ?? 0), 0)
   const average = filled.length ? Math.round(total / filled.length) : 0
