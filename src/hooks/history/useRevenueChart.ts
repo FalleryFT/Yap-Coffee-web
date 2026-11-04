@@ -1,15 +1,20 @@
 import { formatNumber } from '@/lib/format'
 import { MONTH_ABBR, MONTH_NAMES } from '@/constants/months'
-import { REVENUE } from '@/data/revenue'
 import { TICK_COUNT } from '@/constants/history'
-import { revenueOf, sumOf, yearTotal } from '@/utils/revenue'
-import type { Point } from '@/types/history'
+import { sumOf } from '@/utils/revenue'
+import type { Point, RevenueData } from '@/types/history'
 
-// selected: 'YYYY-MM' atau 'semua'; currentMonth: bulan berjalan 'YYYY-MM'
-export function useRevenueChart(selected: string, currentMonth: string) {
+// selected: 'YYYY-MM' atau 'semua'; currentMonth: bulan berjalan 'YYYY-MM';
+// data: respons GET /admin/history/revenue (null selagi memuat atau bila gagal).
+export function useRevenueChart(selected: string, currentMonth: string, data: RevenueData | null) {
   const isAll = selected === 'semua'
   const [sy = 0, sm = 1] = selected.split('-').map(Number)
   const currentYear = Number(currentMonth.slice(0, 4))
+
+  // Abaikan data yang bukan untuk pilihan saat ini (respons lama yang belum terganti).
+  const monthly = !isAll && data?.mode === 'monthly' && data.year === sy ? data : null
+  const yearly = isAll && data?.mode === 'yearly' ? data : null
+  const monthRevenue = (i: number) => monthly?.points[i]?.revenue ?? null
 
   // ── Titik grafik ──
   let points: Point[]
@@ -21,34 +26,35 @@ export function useRevenueChart(selected: string, currentMonth: string) {
   let footerValue: string
 
   if (isAll) {
-    const years = Object.keys(REVENUE).map(Number).sort((a, b) => a - b)
-    points = years.map((y) => ({
-      key: String(y),
-      short: String(y),
-      tooltip: `Tahun ${y}`,
-      revenue: yearTotal(y),
-      highlight: y === currentYear,
+    points = (yearly?.points ?? []).map((p) => ({
+      key: p.key,
+      short: p.key,
+      tooltip: `Tahun ${p.year}`,
+      revenue: p.revenue,
+      highlight: p.year === currentYear,
     }))
     const totals = points.map((p) => p.revenue ?? 0)
     headlineLabel = 'Total Keseluruhan'
-    headlineValue = sumOf(totals)
+    headlineValue = points.length > 0 ? sumOf(totals) : null
     previousValue = points.length > 1 ? (points[points.length - 2]?.revenue ?? null) : null
     trendLabel = 'tahun terakhir dibanding tahun lalu'
     footerLabel = 'Rata-rata per tahun'
-    footerValue = `Rp ${formatNumber(Math.round(sumOf(totals) / Math.max(points.length, 1)))}`
+    footerValue =
+      points.length > 0 ? `Rp ${formatNumber(Math.round(sumOf(totals) / points.length))}` : '-'
   } else {
     points = MONTH_ABBR.map((short, i) => ({
       key: `${sy}-${i}`,
       short,
       tooltip: `${MONTH_NAMES[i]} ${sy}`,
-      revenue: revenueOf(sy, i),
+      revenue: monthRevenue(i),
       highlight: i === sm - 1,
     }))
     headlineLabel = `Pendapatan ${MONTH_NAMES[sm - 1]} ${sy}`
-    headlineValue = revenueOf(sy, sm - 1)
-    previousValue = sm === 1 ? revenueOf(sy - 1, 11) : revenueOf(sy, sm - 2)
+    headlineValue = monthRevenue(sm - 1)
+    previousValue = sm === 1 ? (monthly?.previousDecember ?? null) : monthRevenue(sm - 2)
     trendLabel = 'dibanding bulan lalu'
-    const total = yearTotal(sy)
+    const values = points.map((p) => p.revenue)
+    const total = values.every((v) => v === null) ? null : sumOf(values)
     footerLabel = `Total Tahun ${sy}`
     footerValue = total === null ? '-' : `Rp ${formatNumber(total)}`
   }

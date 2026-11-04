@@ -5,9 +5,10 @@ import { Th } from './ui'
 interface Props {
   rows: HistoryRow[]
   onReceipt: (row: HistoryRow) => void
+  loading?: boolean
 }
 
-export function HistoryTable({ rows, onReceipt }: Props) {
+export function HistoryTable({ rows, onReceipt, loading = false }: Props) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[900px]">
@@ -29,7 +30,7 @@ export function HistoryTable({ rows, onReceipt }: Props) {
           {rows.length === 0 && (
             <tr>
               <td colSpan={7} className="py-16 text-center text-bark">
-                Tidak ada transaksi yang cocok.
+                {loading ? 'Memuat riwayat...' : 'Tidak ada transaksi yang cocok.'}
               </td>
             </tr>
           )}

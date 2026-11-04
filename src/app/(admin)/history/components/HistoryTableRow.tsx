@@ -38,7 +38,11 @@ export function HistoryTableRow({ row: r, onReceipt }: Props) {
       </td>
       <td className="px-3 py-6 text-[14px]">
         <div className="font-medium text-ink">{r.spot}</div>
-        <div className="text-[12px] text-mocha">Sesi Pagi (08:30 - 10:00)</div>
+        {r.session && (
+          <div className="text-[12px] text-mocha">
+            {r.session.name} ({r.session.hours})
+          </div>
+        )}
       </td>
       <td className="px-3 py-6">
         <div

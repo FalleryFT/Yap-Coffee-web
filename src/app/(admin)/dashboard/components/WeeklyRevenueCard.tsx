@@ -1,11 +1,14 @@
-import { Banknote, TrendingUp } from 'lucide-react'
-import { weeklyRevenueTrendPercent } from '@/data/dummy'
+import { Banknote, TrendingDown, TrendingUp } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
 import { useWeeklyRevenue } from '@/hooks/dashboard/useWeeklyRevenue'
+import type { WeeklyRevenueData } from '@/types/dashboard'
+import { formatTrend } from '@/utils/dashboard'
 import { WeeklyRevenueBars } from './WeeklyRevenueBars'
 
-export function WeeklyRevenueCard() {
-  const { data, total, average, niceMax, ticks } = useWeeklyRevenue()
+export function WeeklyRevenueCard({ weekly }: { weekly: WeeklyRevenueData | null }) {
+  const { data, total, average, niceMax, ticks } = useWeeklyRevenue(weekly?.points ?? [])
+  const trend = weekly?.trendPercent != null ? formatTrend(weekly.trendPercent) : null
+  const TrendIcon = trend?.up === false ? TrendingDown : TrendingUp
 
   return (
     <section className="flex flex-col rounded-2xl border border-line bg-white p-6 shadow-card">
@@ -26,9 +29,14 @@ export function WeeklyRevenueCard() {
             <span className="mr-1 text-sm font-semibold text-mocha">Rp</span>
             {formatNumber(total)}
           </p>
-          <p className="mt-1 flex items-center justify-end gap-1 text-xs text-olive">
-            <TrendingUp size={14} />+{weeklyRevenueTrendPercent}% dibanding pekan lalu
-          </p>
+          {trend && (
+            <p
+              className={`mt-1 flex items-center justify-end gap-1 text-xs ${trend.up ? 'text-olive' : 'text-danger'}`}
+            >
+              <TrendIcon size={14} />
+              {trend.text} dibanding pekan lalu
+            </p>
+          )}
         </div>
       </header>
 

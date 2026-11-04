@@ -11,6 +11,12 @@ export function ReceiptTotals({ r }: { r: ReceiptData }) {
           <dt className="text-[#4f453a]">Subtotal Produk &amp; Modifikasi</dt>
           <dd className="font-bold">{rupiah(r.subtotal)}</dd>
         </div>
+        {r.tax ? (
+          <div className="flex justify-between">
+            <dt className="text-[#4f453a]">Pajak</dt>
+            <dd className="font-semibold">{rupiah(r.tax)}</dd>
+          </div>
+        ) : null}
         <div className="flex justify-between">
           <dt className="text-[#4f453a]">Kemasan Ramah Lingkungan (Paper Bag)</dt>
           <dd className="font-semibold text-[#6b7a3a]">

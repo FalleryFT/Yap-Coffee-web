@@ -20,6 +20,7 @@ export type ReceiptData = {
   items: ReceiptItem[]
   baristaNote?: string
   subtotal: number
+  tax?: number // pajak; 0/kosong = tidak ditampilkan
   packagingFee: number
   serviceFee: number
   total: number
