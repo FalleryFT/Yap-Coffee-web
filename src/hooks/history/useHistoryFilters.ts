@@ -1,7 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { CURRENT_MONTH, PAGE_SIZE, statusOptions } from '@/constants/history'
-import { rows } from '@/data/history'
-import type { StatusFilter } from '@/types/history'
+import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import { toApiError } from '@/lib/apiError'
+import { getHistory } from '@/services/historyService'
+import type { HistoryPage, StatusFilter } from '@/types/history'
 
 export function useHistoryFilters() {
   const [q, setQ] = useState('')
@@ -9,20 +11,36 @@ export function useHistoryFilters() {
   const [status, setStatus] = useState<StatusFilter>('selesai')
   const [page, setPage] = useState(1)
 
-  const shown = useMemo(() => {
-    const keyword = q.toLowerCase()
-    return rows.filter(
-      (r) =>
-        (month === 'semua' || r.date.startsWith(month)) &&
-        (status === 'semua' || r.status === status) &&
-        (r.id + r.name + r.item).toLowerCase().includes(keyword),
-    )
-  }, [q, month, status])
+  const [data, setData] = useState<HistoryPage | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [reloadKey, setReloadKey] = useState(0)
 
-  const totalPages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE))
+  const search = useDebouncedValue(q.trim())
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setLoadError(null)
+    getHistory({ status, month, q: search || undefined, page, limit: PAGE_SIZE })
+      .then((result) => {
+        if (!active) return
+        // Halaman ini sudah tidak ada (data berkurang): pindah ke halaman terakhir.
+        if (result.page > result.totalPages) setPage(result.totalPages)
+        else setData(result)
+      })
+      .catch((err) => active && setLoadError(toApiError(err).message))
+      .finally(() => active && setLoading(false))
+    return () => {
+      active = false
+    }
+  }, [status, month, search, page, reloadKey])
+
+  const pageRows = data?.items ?? []
+  const total = data?.total ?? 0
+  const totalPages = data?.totalPages ?? 1
   const currentPage = Math.min(page, totalPages)
   const start = (currentPage - 1) * PAGE_SIZE
-  const pageRows = shown.slice(start, start + PAGE_SIZE)
 
   const hasFilter = month !== 'semua' || status !== 'semua'
   const statusLabel = statusOptions.find((o) => o.value === status)?.label ?? ''
@@ -49,10 +67,13 @@ export function useHistoryFilters() {
     setMonth(CURRENT_MONTH)
     setStatus('selesai')
     setPage(1)
+    setReloadKey((k) => k + 1) // tombol "Muat ulang" juga mengambil data terbaru
   }
+  const reload = useCallback(() => setReloadKey((k) => k + 1), [])
 
   return {
-    q, month, status, shown, pageRows, start, totalPages, currentPage, hasFilter, statusLabel,
+    q, month, status, pageRows, total, start, totalPages, currentPage, hasFilter, statusLabel,
+    loading, loadError, reload,
     setPage, changeQuery, changeMonth, changeStatus, clearFilters, resetToDefault,
   }
 }
