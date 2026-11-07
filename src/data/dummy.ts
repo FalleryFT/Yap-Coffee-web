@@ -224,6 +224,7 @@ export const menuItems: MenuItem[] = [
     category: 'Kopi Susu',
     price: 20000,
     stock: 24,
+    available: true,
     addons: ['Less Sugar', 'Oat Milk +5k', 'Extra Shot +4k'],
   },
   {
@@ -233,6 +234,7 @@ export const menuItems: MenuItem[] = [
     category: 'Manual Brew',
     price: 28000,
     stock: 3,
+    available: true,
     addons: ['Hot / Ice', 'Japanese Drip +2k'],
   },
   {
@@ -242,6 +244,7 @@ export const menuItems: MenuItem[] = [
     category: 'Manual Brew',
     price: 30000,
     stock: 3,
+    available: true,
     addons: ['Hot / Ice', 'Japanese Drip +2k'],
   },
   {
@@ -251,6 +254,7 @@ export const menuItems: MenuItem[] = [
     category: 'Makanan Ringan',
     price: 18000,
     stock: 15,
+    available: true,
     addons: ['Keju Parut +4k', 'Dip Saus Karamel +3k'],
   },
   {
@@ -260,6 +264,7 @@ export const menuItems: MenuItem[] = [
     category: 'Makanan Ringan',
     price: 24000,
     stock: 0,
+    available: true,
     addons: ['Warm Up / Hangatkan'],
   },
   {
@@ -269,6 +274,7 @@ export const menuItems: MenuItem[] = [
     category: 'Kopi Susu',
     price: 22000,
     stock: 19,
+    available: true,
     addons: ['Less Sweet', 'Extra Shot +4k', 'Grass Jelly +3k'],
   },
   {
@@ -278,6 +284,7 @@ export const menuItems: MenuItem[] = [
     category: 'Non-Coffee',
     price: 26000,
     stock: 12,
+    available: true,
     addons: ['Oat Milk +5k', 'Less Sugar'],
   },
   {
@@ -287,6 +294,7 @@ export const menuItems: MenuItem[] = [
     category: 'Kopi Susu',
     price: 35000,
     stock: 0,
+    available: true,
     addons: ['Cold Bottled'],
   },
 ]

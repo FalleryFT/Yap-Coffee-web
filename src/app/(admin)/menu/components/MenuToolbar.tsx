@@ -1,4 +1,4 @@
-import { ChevronDown, Search } from 'lucide-react'
+import { ChevronDown, Plus, Search } from 'lucide-react'
 import { stockFilterOptions } from '@/constants/menu'
 import type { MenuCategory, StockStatus } from '@/types/admin'
 import type { CategoryChip } from '@/types/menu'
@@ -7,6 +7,7 @@ interface MenuToolbarProps {
   categories: CategoryChip[]
   category: MenuCategory | 'semua'
   onCategoryChange: (value: MenuCategory | 'semua') => void
+  onAddCategory: () => void
   search: string
   onSearchChange: (value: string) => void
   stock: StockStatus | 'semua'
@@ -17,6 +18,7 @@ export function MenuToolbar({
   categories,
   category,
   onCategoryChange,
+  onAddCategory,
   search,
   onSearchChange,
   stock,
@@ -46,6 +48,15 @@ export function MenuToolbar({
           )
         })}
       </div>
+
+      <button
+        type="button"
+        onClick={onAddCategory}
+        className="flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-mocha/50 bg-transparent px-4 text-sm font-medium whitespace-nowrap text-mocha transition-colors hover:bg-white"
+      >
+        <Plus size={16} />
+        Tambah Kategori
+      </button>
 
       <label className="flex h-10 w-full items-center gap-2 rounded-lg bg-white px-3 text-sm sm:w-60">
         <Search size={16} className="shrink-0 text-bark" />

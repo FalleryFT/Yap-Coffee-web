@@ -4,7 +4,7 @@ import { CategorySelect } from './CategorySelect'
 
 // Kategori + Stok (mode Add)
 export function AddCategoryStock({ form }: { form: MenuForm }) {
-  const { category, setCategory, stock, setStock } = form
+  const { category, setCategory, categories, stock, setStock } = form
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -12,7 +12,7 @@ export function AddCategoryStock({ form }: { form: MenuForm }) {
         <label className={labelCls}>
           Kategori <span className="text-danger">*</span>
         </label>
-        <CategorySelect value={category} onChange={setCategory} />
+        <CategorySelect value={category} options={categories} onChange={setCategory} />
       </div>
       <div>
         <label className={labelCls}>

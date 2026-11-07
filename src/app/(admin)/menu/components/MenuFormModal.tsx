@@ -20,11 +20,13 @@ interface MenuFormModalProps {
   item?: MenuItem
   onClose: () => void
   onSave: (data: Partial<MenuItem>) => Promise<void>
+  /** Nama kategori yang bisa dipilih di form. */
+  categories: string[]
 }
 
-export function MenuFormModal({ mode, item, onClose, onSave }: MenuFormModalProps) {
+export function MenuFormModal({ mode, item, onClose, onSave, categories }: MenuFormModalProps) {
   const stableClose = useCallback(() => onClose(), [onClose])
-  const form = useMenuForm(mode, item, onSave, onClose)
+  const form = useMenuForm(mode, item, onSave, onClose, categories)
   const { isEdit } = form
 
   return (
@@ -43,7 +45,7 @@ export function MenuFormModal({ mode, item, onClose, onSave }: MenuFormModalProp
         {!isEdit && <AddCategoryStock form={form} />}
         {isEdit ? <EditPriceStock form={form} /> : <AddPrice form={form} />}
 
-        {isEdit && <AvailabilityToggle form={form} />}
+        <AvailabilityToggle form={form} />
         {isEdit && <AddonsEditor form={form} />}
 
         {isEdit && (
@@ -60,7 +62,7 @@ export function MenuFormModal({ mode, item, onClose, onSave }: MenuFormModalProp
         </p>
       )}
 
-      <MenuFormFooter isEdit={isEdit} canSave={Boolean(form.name) && !form.saving} onClose={onClose} onSave={form.handleSave} />
+      <MenuFormFooter isEdit={isEdit} canSave={Boolean(form.name) && Boolean(form.category) && !form.saving} onClose={onClose} onSave={form.handleSave} />
     </Modal>
   )
 }

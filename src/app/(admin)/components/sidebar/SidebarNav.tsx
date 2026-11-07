@@ -1,14 +1,18 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { navItems } from '@/constants/navItems'
+import { usePendingOrderCount } from '@/hooks/orders/usePendingOrderCount'
 
 export function SidebarNav({ onClose }: { onClose: () => void }) {
   const pathname = usePathname()
+  const pendingOrders = usePendingOrderCount()
 
   return (
     <nav className="flex flex-1 flex-col gap-1 px-4" aria-label="Menu utama">
-      {navItems.map(({ label, href, icon: Icon, badge }) => {
+      {navItems.map(({ label, href, icon: Icon }) => {
         const isActive = pathname === href
+        // Badge Orders = jumlah pesanan Baru Masuk dari server; disembunyikan bila 0.
+        const badge = href === '/orders' ? (pendingOrders ?? 0) : 0
         return (
           <Link
             key={href}
@@ -24,11 +28,11 @@ export function SidebarNav({ onClose }: { onClose: () => void }) {
             {badge ? (
               <span
                 className={[
-                  'flex size-6 items-center justify-center rounded-full text-xs font-semibold',
+                  'flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-xs font-semibold',
                   isActive ? 'bg-white/20 text-white' : 'bg-mocha text-white',
                 ].join(' ')}
               >
-                {badge}
+                {badge > 99 ? '99+' : badge}
               </span>
             ) : null}
           </Link>

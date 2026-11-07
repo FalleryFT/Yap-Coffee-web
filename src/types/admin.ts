@@ -2,7 +2,8 @@ export type OrderStatus = 'menunggu' | 'meramu' | 'siap_ambil' | 'selesai'
 export type AvatarTone = 'peach' | 'sage' | 'gray'
 export type HintTone = 'danger' | 'olive' | 'muted'
 export type ScheduleStatus = 'aktif' | 'mendatang'
-export type MenuCategory = 'Kopi Susu' | 'Manual Brew' | 'Non-Coffee' | 'Makanan Ringan'
+// Kategori dikelola admin (tabel menu_categories), jadi bukan lagi daftar tetap.
+export type MenuCategory = string
 export type StockStatus = 'tersedia' | 'menipis' | 'habis'
 
 export interface DashboardOrder {
@@ -52,6 +53,8 @@ export interface MenuItem {
   stock: number // sisa stok harian; status dihitung dari angka ini
   addons: string[] // pilihan modifikasi, contoh 'Oat Milk +5k'
   image?: string
+  /** Tampil di katalog pre-order pelanggan. false = disembunyikan. */
+  available: boolean
 }
 
 export interface WeeklyRevenuePoint {

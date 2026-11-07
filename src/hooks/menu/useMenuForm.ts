@@ -10,15 +10,16 @@ export function useMenuForm(
   item: MenuItem | undefined,
   onSave: (data: Partial<MenuItem>) => Promise<void>,
   onClose: () => void,
+  categories: string[],
 ) {
   const titleId = useId()
 
   const [name, setName] = useState(item?.name ?? '')
   const [desc, setDesc] = useState(item?.description ?? '')
-  const [category, setCategory] = useState<MenuCategory>(item?.category ?? 'Kopi Susu')
+  const [category, setCategory] = useState<MenuCategory>(item?.category ?? categories[0] ?? '')
   const [price, setPrice] = useState(item?.price ?? 0)
   const [stock, setStock] = useState(item?.stock ?? 25)
-  const [available, setAvailable] = useState(true)
+  const [available, setAvailable] = useState(item?.available ?? true)
   const [addons, setAddons] = useState<string[]>(item?.addons ?? [])
   const [newAddon, setNewAddon] = useState('')
   const [imgPreview, setImgPreview] = useState<string | undefined>(item?.image)
@@ -55,7 +56,7 @@ export function useMenuForm(
       // Foto baru (preview blob:) diunggah dulu; yang dikirim ke menu hanya nama berkasnya.
       const image =
         imageFile && imgPreview?.startsWith('blob:') ? await uploadMenuImage(imageFile) : imgPreview
-      await onSave({ name, description: desc, category, price, stock, addons, image })
+      await onSave({ name, description: desc, category, price, stock, addons, image, available })
       onClose()
     } catch (err) {
       const apiError = toApiError(err)
@@ -66,7 +67,7 @@ export function useMenuForm(
   }
 
   return {
-    titleId, isEdit, skuLabel, fileRef,
+    titleId, isEdit, skuLabel, fileRef, categories,
     name, setName, desc, setDesc, category, setCategory,
     price, setPrice, stock, setStock, available, setAvailable,
     addons, newAddon, setNewAddon, imgPreview, setImgPreview,

@@ -4,7 +4,7 @@ import type { MenuForm } from '@/hooks/menu/useMenuForm'
 import { CategorySelect } from './CategorySelect'
 
 export function PhotoEdit({ form }: { form: MenuForm }) {
-  const { fileRef, imgPreview, setImgPreview, handleFile, category, setCategory } = form
+  const { fileRef, imgPreview, setImgPreview, handleFile, category, setCategory, categories } = form
 
   return (
     <section>
@@ -48,7 +48,7 @@ export function PhotoEdit({ form }: { form: MenuForm }) {
         {/* Kategori di samping foto saat edit */}
         <div className="flex-1">
           <p className={labelCls}>Kategori Menu Kedai</p>
-          <CategorySelect value={category} onChange={setCategory} />
+          <CategorySelect value={category} options={categories} onChange={setCategory} />
         </div>
       </div>
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
