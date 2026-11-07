@@ -1,4 +1,4 @@
-import { Coffee, Cookie, Pencil, Trash2 } from 'lucide-react'
+import { Coffee, Cookie, EyeOff, Pencil, Trash2 } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
 import { getStockStatus } from '@/utils/menu'
 import type { MenuItem, StockStatus } from '@/types/admin'
@@ -44,6 +44,12 @@ export function MenuCard({ item, onEdit, onDelete }: MenuCardProps) {
         <span className="absolute top-2.5 right-2.5 rounded-md bg-white/90 px-2.5 py-1 text-xs font-semibold text-espresso">
           {item.category}
         </span>
+        {!item.available && (
+          <span className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-espresso/85 px-3 py-1 text-xs font-semibold text-white">
+            <EyeOff size={13} />
+            Tidak di Katalog
+          </span>
+        )}
       </div>
 
       {/* Isi */}

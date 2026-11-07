@@ -58,12 +58,18 @@ export function AvailabilityToggle({ form }: { form: MenuForm }) {
         </span>
         <div>
           <p className="text-[14px] font-semibold text-espresso">Tersedia di Katalog Pre-Order</p>
-          <p className="text-[12px] text-bark">Pelanggan tetangga dapat langsung memesan online</p>
+          <p className="text-[12px] text-bark">
+            {available
+              ? 'Pelanggan tetangga dapat langsung memesan online'
+              : 'Disembunyikan dari katalog pelanggan'}
+          </p>
         </div>
       </div>
       <button
+        type="button"
         role="switch"
         aria-checked={available}
+        aria-label="Tersedia di Katalog Pre-Order"
         onClick={() => setAvailable((v) => !v)}
         className={`relative h-7 w-12 rounded-full transition-colors ${available ? 'bg-olive' : 'bg-mist'}`}
       >

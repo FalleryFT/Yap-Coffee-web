@@ -7,6 +7,7 @@ export type ModalState =
   | { type: 'add' }
   | { type: 'edit'; item: MenuItem }
   | { type: 'delete'; item: MenuItem }
+  | { type: 'category' }
 
 export interface CategoryChip {
   value: MenuCategory | 'semua'

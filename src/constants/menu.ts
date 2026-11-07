@@ -1,11 +1,4 @@
-import type { MenuCategory, StockStatus } from '@/types/admin'
-
-export const menuCategories: MenuCategory[] = [
-  'Kopi Susu',
-  'Manual Brew',
-  'Non-Coffee',
-  'Makanan Ringan',
-]
+import type { StockStatus } from '@/types/admin'
 
 // Sisa stok sampai angka ini dianggap "Menipis".
 export const LOW_STOCK_LIMIT = 5
