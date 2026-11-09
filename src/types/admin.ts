@@ -48,7 +48,8 @@ export interface MenuItem {
   id: number
   name: string
   description: string
-  category: MenuCategory
+  /** null = tanpa kategori (kategori asalnya sudah dihapus); hanya tampil di filter "Semua". */
+  category: MenuCategory | null
   price: number // rupiah, tanpa format
   stock: number // sisa stok harian; status dihitung dari angka ini
   addons: string[] // pilihan modifikasi, contoh 'Oat Milk +5k'

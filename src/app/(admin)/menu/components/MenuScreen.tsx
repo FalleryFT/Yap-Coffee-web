@@ -24,6 +24,7 @@ export function MenuScreen() {
         category={menu.category}
         onCategoryChange={menu.setCategory}
         onAddCategory={() => setModal({ type: 'category' })}
+        onDeleteCategory={menu.handleDeleteCategory}
         search={menu.search}
         onSearchChange={menu.setSearch}
         stock={menu.stock}
