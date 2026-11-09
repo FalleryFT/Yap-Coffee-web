@@ -18,6 +18,11 @@ export function CategorySelect({ value, options, onChange }: Props) {
         aria-label="Kategori menu"
         className={`${inputCls} appearance-none pr-8`}
       >
+        {value === '' && options.length > 0 && (
+          <option value="" disabled>
+            Pilih kategori
+          </option>
+        )}
         {options.length === 0 && <option value="">Belum ada kategori</option>}
         {options.map((c) => (
           <option key={c} value={c}>
