@@ -1,3 +1,4 @@
+import { useRef, useState, type MouseEvent, type PointerEvent } from 'react'
 import { ChevronDown, Plus, Search } from 'lucide-react'
 import { stockFilterOptions } from '@/constants/menu'
 import type { MenuCategory, StockStatus } from '@/types/admin'
@@ -24,10 +25,69 @@ export function MenuToolbar({
   stock,
   onStockChange,
 }: MenuToolbarProps) {
+  const dragState = useRef({ active: false, moved: false, startX: 0, startScrollLeft: 0, pointerId: -1 })
+  const [dragging, setDragging] = useState(false)
+
+  // Klik-tahan-geser untuk mouse; sentuhan tetap pakai scroll native.
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== 'mouse' || event.button !== 0) return
+    const el = event.currentTarget
+    dragState.current = {
+      active: true,
+      moved: false,
+      startX: event.clientX,
+      startScrollLeft: el.scrollLeft,
+      pointerId: event.pointerId,
+    }
+    el.setPointerCapture(event.pointerId)
+  }
+
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    const drag = dragState.current
+    if (!drag.active) return
+    const delta = event.clientX - drag.startX
+    if (!drag.moved && Math.abs(delta) <= 4) return
+    if (!drag.moved) {
+      drag.moved = true
+      setDragging(true)
+    }
+    event.currentTarget.scrollLeft = drag.startScrollLeft - delta
+  }
+
+  function handlePointerEnd(event: PointerEvent<HTMLDivElement>) {
+    const drag = dragState.current
+    if (!drag.active) return
+    drag.active = false
+    setDragging(false)
+    if (event.currentTarget.hasPointerCapture(drag.pointerId)) {
+      event.currentTarget.releasePointerCapture(drag.pointerId)
+    }
+  }
+
+  // Geseran tidak boleh ikut memilih kategori.
+  function handleClickCapture(event: MouseEvent<HTMLDivElement>) {
+    if (!dragState.current.moved) return
+    dragState.current.moved = false
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   return (
     <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-sand/60 p-3">
       {/* Chip kategori: bisa digeser kalau kepanjangan */}
-      <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto py-1" role="tablist" aria-label="Kategori menu">
+      <div
+        role="tablist"
+        aria-label="Kategori menu"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onClickCapture={handleClickCapture}
+        className={[
+          'flex min-w-0 flex-1 gap-4 overflow-x-auto py-1 select-none [&_button]:cursor-inherit',
+          dragging ? 'cursor-grabbing' : 'cursor-grab',
+        ].join(' ')}
+      >
         {categories.map((chip) => {
           const active = chip.value === category
           return (
