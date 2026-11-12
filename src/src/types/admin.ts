@@ -1,0 +1,70 @@
+export type OrderStatus = 'menunggu' | 'meramu' | 'siap_ambil' | 'selesai'
+export type AvatarTone = 'peach' | 'sage' | 'gray'
+export type HintTone = 'danger' | 'olive' | 'muted'
+export type ScheduleStatus = 'aktif' | 'mendatang'
+// Kategori dikelola admin (tabel menu_categories), jadi bukan lagi daftar tetap.
+export type MenuCategory = string
+export type StockStatus = 'tersedia' | 'menipis' | 'habis'
+
+export interface DashboardOrder {
+  id: string
+  time: string
+  customerName: string
+  customerInitials: string
+  customerPhone: string
+  avatarTone: AvatarTone
+  items: string
+  notes: string
+  pickupTime: string
+  pickupHint: string
+  pickupHintTone: HintTone
+  status: OrderStatus
+}
+
+export interface PreOrderSchedule {
+  id: number
+  name: string
+  date: string // 'YYYY-MM-DD'; hari & tanggal tampilan dihitung dari sini
+  location: string
+  locationDetail: string
+  mapsUrl?: string  
+  /** Titik di peta aplikasi pelanggan; kosong bila belum diisi. */
+  latitude?: number
+  longitude?: number
+  pickupTime: string // '08:30 - 11:30 WIB'
+  cutOff: string // '07:00 WIB' (tampilan menambah awalan "Cut-off: ")
+  cutOffUrgent: boolean
+  status: ScheduleStatus
+}
+
+export interface TopMenuItem {
+  id: number
+  name: string
+  description: string
+  sold: number
+  share: string
+  unit: string
+  image?: string
+}
+
+export interface MenuItem {
+  id: number
+  name: string
+  description: string
+  category: MenuCategory
+  price: number // rupiah, tanpa format
+  stock: number // sisa stok harian; status dihitung dari angka ini
+  addons: string[] // pilihan modifikasi, contoh 'Oat Milk +5k'
+  image?: string
+  /** Tampil di katalog pre-order pelanggan. false = disembunyikan. */
+  available: boolean
+  /** true = minuman (pelanggan memilih ukuran dan tingkat manis), false = makanan. Menurut jenis kategorinya. */
+  hasOptions?: boolean
+}
+
+export interface WeeklyRevenuePoint {
+  day: string // 'Sen', 'Sel', ...
+  date: string // 'YYYY-MM-DD'
+  revenue: number | null // null = hari belum berjalan
+  isToday?: boolean
+}

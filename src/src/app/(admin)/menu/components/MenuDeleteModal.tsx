@@ -26,7 +26,7 @@ export function MenuDeleteModal({ item, onClose, onConfirm }: MenuDeleteModalPro
   const [error, setError] = useState<string | null>(null)
   const stableClose = useCallback(() => onClose(), [onClose])
   const status = getStockStatus(item.stock)
-  const PlaceholderIcon = item.category === 'Makanan Ringan' ? Cookie : Coffee
+  const PlaceholderIcon = item.hasOptions === false ? Cookie : Coffee
 
   async function confirm() {
     setDeleting(true)

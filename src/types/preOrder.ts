@@ -7,6 +7,7 @@ export interface ScheduleFormValues {
   location: string
   locationDetail: string
   mapsUrl: string
+  coordinates: string // "-7.9525, 112.6128" (opsional)
   pickupTime: string // "08:30 - 11:30 WIB"
   cutOff: string // "07:00 WIB"
 }
@@ -18,6 +19,7 @@ export interface FormState {
   location: string
   locationDetail: string
   mapsUrl: string
+  coordinates: string
   pickupStart: string
   pickupEnd: string
   cutOffTime: string

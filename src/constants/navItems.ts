@@ -1,4 +1,4 @@
-import { Clock, History, LayoutDashboard, Receipt, Utensils } from 'lucide-react'
+import { Clock, History, LayoutDashboard, Receipt, Settings, Utensils } from 'lucide-react'
 import type { NavItem } from '@/types/nav'
 
 export const navItems: NavItem[] = [
@@ -7,4 +7,5 @@ export const navItems: NavItem[] = [
   { label: 'Menu', href: '/menu', icon: Utensils },
   { label: 'Orders', href: '/orders', icon: Receipt },
   { label: 'History', href: '/history', icon: History },
+  { label: 'Pengaturan', href: '/settings', icon: Settings },
 ]

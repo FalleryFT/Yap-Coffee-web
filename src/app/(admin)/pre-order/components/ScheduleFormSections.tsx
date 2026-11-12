@@ -1,5 +1,6 @@
-import { AlarmClockOff, Clock, Link2, MapPin } from 'lucide-react'
+import { AlarmClockOff, Clock, Link2, LocateFixed, MapPin } from 'lucide-react'
 import { MapsEmbed } from '@/app/components/MapsEmbed'
+import { coordinatesFromMapsUrl } from '@/lib/maps'
 import type { PreOrderSchedule } from '@/types/admin'
 import type { Errors, FormState } from '@/types/preOrder'
 import { DateField } from './form/DateField'
@@ -27,6 +28,14 @@ export function ScheduleFormSections({ isEdit, schedule, values, errors, update,
 
   // Saat edit: tanggal, link Google Maps, dan semua jam terkunci (tidak bisa diubah).
   const locked = isEdit
+
+  // Titik di peta aplikasi pelanggan: koordinat yang diketik, atau yang terbaca dari link Maps.
+  const detected = values.mapsUrl.trim() ? coordinatesFromMapsUrl(values.mapsUrl) : null
+  const coordinatesHint = values.coordinates.trim()
+    ? 'Dipakai untuk peta yang bisa digeser di aplikasi pelanggan.'
+    : detected
+      ? `Terbaca dari link: ${detected.latitude}, ${detected.longitude}. Itu yang dipakai untuk peta di aplikasi.`
+      : 'Link ini tidak memuat koordinat, jadi peta di aplikasi belum tampil. Di Google Maps, klik kanan pada titik lalu salin angka paling atas (contoh: -7.9525, 112.6128).'
 
   return (
     <>
@@ -82,6 +91,17 @@ export function ScheduleFormSections({ isEdit, schedule, values, errors, update,
               className="h-44"
             />
           )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <TextField
+            label="Koordinat Titik di Peta (opsional)"
+            value={values.coordinates}
+            onChange={(v) => update('coordinates', v)}
+            placeholder="-7.9525, 112.6128"
+            icon={LocateFixed}
+            error={errors.coordinates}
+          />
+          <p className="text-xs text-mist">{coordinatesHint}</p>
         </div>
         <TextField
           label="Catatan / Detail Titik Temu"

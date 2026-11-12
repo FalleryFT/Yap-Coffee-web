@@ -1,6 +1,7 @@
 'use client'
 
 import { useMenuItems } from '@/hooks/menu/useMenuItems'
+import { CategoryFormModal } from './CategoryFormModal'
 import { MenuCard } from './MenuCard'
 import { MenuDeleteModal } from './MenuDeleteModal'
 import { MenuFormModal } from './MenuFormModal'
@@ -16,12 +17,13 @@ export function MenuScreen() {
     <main className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
       <MenuHeader onAdd={() => setModal({ type: 'add' })} />
 
-      <MenuSummary activeCount={menu.items.length} soldOutCount={menu.soldOutCount} />
+      <MenuSummary activeCount={menu.activeCount} soldOutCount={menu.soldOutCount} />
 
       <MenuToolbar
         categories={menu.chips}
         category={menu.category}
         onCategoryChange={menu.setCategory}
+        onAddCategory={() => setModal({ type: 'category' })}
         search={menu.search}
         onSearchChange={menu.setSearch}
         stock={menu.stock}
@@ -61,10 +63,28 @@ export function MenuScreen() {
 
       {/* ── Modals ── */}
       {modal.type === 'add' && (
-        <MenuFormModal mode="add" onClose={closeModal} onSave={menu.handleSave} />
+        <MenuFormModal
+          mode="add"
+          categories={menu.categories}
+          onClose={closeModal}
+          onSave={menu.handleSave}
+        />
       )}
       {modal.type === 'edit' && (
-        <MenuFormModal mode="edit" item={modal.item} onClose={closeModal} onSave={menu.handleSave} />
+        <MenuFormModal
+          mode="edit"
+          item={modal.item}
+          categories={menu.categories}
+          onClose={closeModal}
+          onSave={menu.handleSave}
+        />
+      )}
+      {modal.type === 'category' && (
+        <CategoryFormModal
+          existing={menu.categories}
+          onClose={closeModal}
+          onSave={menu.handleAddCategory}
+        />
       )}
       {modal.type === 'delete' && (
         <MenuDeleteModal item={modal.item} onClose={closeModal} onConfirm={menu.handleDelete} />

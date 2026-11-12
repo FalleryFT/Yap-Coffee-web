@@ -12,13 +12,15 @@ interface CategoryFormModalProps {
   /** Nama yang sudah ada, untuk pengecekan duplikat sebelum dikirim ke server. */
   existing: string[]
   onClose: () => void
-  onSave: (name: string) => Promise<void>
+  onSave: (name: string, hasOptions: boolean) => Promise<void>
 }
 
 export function CategoryFormModal({ existing, onClose, onSave }: CategoryFormModalProps) {
   const titleId = useId()
   const stableClose = useCallback(() => onClose(), [onClose])
   const [name, setName] = useState('')
+  // Minuman: pelanggan memilih ukuran dan tingkat manis. Makanan: tanpa pilihan.
+  const [hasOptions, setHasOptions] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,7 +35,7 @@ export function CategoryFormModal({ existing, onClose, onSave }: CategoryFormMod
     setSaving(true)
     setError(null)
     try {
-      await onSave(trimmed)
+      await onSave(trimmed, hasOptions)
       onClose()
     } catch (err) {
       const apiError = toApiError(err)
@@ -86,6 +88,34 @@ export function CategoryFormModal({ existing, onClose, onSave }: CategoryFormMod
           {name.length} / {NAME_MAX} karakter
         </p>
       </div>
+
+      <fieldset className="mt-4">
+        <legend className={labelCls}>Jenis Kategori</legend>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { value: true, title: 'Minuman', hint: 'Pelanggan memilih ukuran dan tingkat manis' },
+            { value: false, title: 'Makanan', hint: 'Tanpa pilihan ukuran dan manis' },
+          ].map((option) => (
+            <label
+              key={option.title}
+              className={`flex cursor-pointer flex-col gap-0.5 rounded-lg border px-3 py-2.5 ${
+                hasOptions === option.value ? 'border-espresso bg-peach/40' : 'border-line bg-white hover:bg-sand'
+              }`}
+            >
+              <span className="flex items-center gap-2 text-[14px] font-semibold text-espresso">
+                <input
+                  type="radio"
+                  name={`${titleId}-type`}
+                  checked={hasOptions === option.value}
+                  onChange={() => setHasOptions(option.value)}
+                />
+                {option.title}
+              </span>
+              <span className="text-[12px] text-bark">{option.hint}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       {error && (
         <p role="alert" className="mt-3 rounded-lg bg-danger-soft px-4 py-3 text-[13px] text-danger">

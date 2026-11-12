@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toApiError } from '@/lib/apiError'
 import {
-  createMenuItem, deleteMenuItem, getMenuItems, toCreatePayload, toUpdatePayload, updateMenuItem,
+  createMenuCategory, createMenuItem, deleteMenuItem, getMenuCategories, getMenuItems,
+  toCreatePayload, toUpdatePayload, updateMenuItem,
 } from '@/services/menuService'
 import { getStockStatus } from '@/utils/menu'
-import { menuCategories } from '@/constants/menu'
 import type { MenuCategory, MenuItem, StockStatus } from '@/types/admin'
 import type { CategoryChip, ModalState } from '@/types/menu'
 
 export function useMenuItems() {
   const [items, setItems] = useState<MenuItem[]>([])
+  const [categories, setCategories] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
@@ -22,8 +23,12 @@ export function useMenuItems() {
     let active = true
     setLoading(true)
     setLoadError(null)
-    getMenuItems()
-      .then((data) => active && setItems(data))
+    Promise.all([getMenuItems(), getMenuCategories()])
+      .then(([menuItems, categoryNames]) => {
+        if (!active) return
+        setItems(menuItems)
+        setCategories(categoryNames)
+      })
       .catch((err) => active && setLoadError(toApiError(err).message))
       .finally(() => active && setLoading(false))
     return () => {
@@ -51,6 +56,17 @@ export function useMenuItems() {
     }
   }
 
+  // Galat dilempar ulang (sebagai ApiError) agar modal kategori bisa menampilkannya.
+  async function handleAddCategory(name: string, hasOptions: boolean) {
+    try {
+      const saved = await createMenuCategory(name, hasOptions)
+      setCategories((prev) => (prev.includes(saved) ? prev : [...prev, saved]))
+      setCategory(saved) // langsung pindah ke kategori baru
+    } catch (err) {
+      throw toApiError(err)
+    }
+  }
+
   async function handleDelete(item: MenuItem) {
     try {
       await deleteMenuItem(item.id)
@@ -63,14 +79,17 @@ export function useMenuItems() {
   const chips: CategoryChip[] = useMemo(
     () => [
       { value: 'semua', label: 'Semua', count: items.length },
-      ...menuCategories.map((c) => ({
+      ...categories.map((c) => ({
         value: c,
         label: c,
         count: items.filter((item) => item.category === c).length,
       })),
     ],
-    [items],
+    [items, categories],
   )
+
+  // Hanya menu yang tampil di katalog pelanggan yang dihitung "aktif".
+  const activeCount = useMemo(() => items.filter((item) => item.available).length, [items])
 
   const soldOutCount = useMemo(
     () => items.filter((item) => getStockStatus(item.stock) === 'habis').length,
@@ -88,8 +107,8 @@ export function useMenuItems() {
   }, [items, category, stock, search])
 
   return {
-    items, loading, loadError, reload, chips, soldOutCount, visible,
+    items, categories, loading, loadError, reload, chips, activeCount, soldOutCount, visible,
     category, setCategory, search, setSearch, stock, setStock,
-    modal, setModal, closeModal, handleSave, handleDelete,
+    modal, setModal, closeModal, handleSave, handleAddCategory, handleDelete,
   }
 }

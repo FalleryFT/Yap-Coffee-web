@@ -7,7 +7,7 @@ import { toState, toSubmitValues, validate } from '@/utils/scheduleForm'
 import type { Errors, FormState, ScheduleFormValues } from '@/types/preOrder'
 
 const FORM_KEYS: (keyof FormState)[] = [
-  'name', 'date', 'location', 'locationDetail', 'mapsUrl', 'pickupStart', 'pickupEnd', 'cutOffTime',
+  'name', 'date', 'location', 'locationDetail', 'mapsUrl', 'coordinates', 'pickupStart', 'pickupEnd', 'cutOffTime',
 ]
 
 export function useScheduleForm(
@@ -52,6 +52,9 @@ export function useScheduleForm(
         const message = apiError.errorFor(key)
         if (message) serverErrors[key] = message
       }
+      // Server memisahkan latitude dan longitude; form hanya punya satu kolom koordinat.
+      const coordinatesError = apiError.errorFor('latitude') ?? apiError.errorFor('longitude')
+      if (coordinatesError) serverErrors.coordinates = coordinatesError
       setErrors(serverErrors)
       setSubmitError(apiError.message)
       setSaving(false)

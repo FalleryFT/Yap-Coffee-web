@@ -57,8 +57,11 @@ export function useMenuItems() {
   }
 
   // Galat dilempar ulang (sebagai ApiError) agar modal kategori bisa menampilkannya.
-  async function handleAddCategory(name: string) {
+  async function handleAddCategory(name: string, hasOptions: boolean) {
     try {
+      const saved = await createMenuCategory(name, hasOptions)
+      setCategories((prev) => (prev.includes(saved) ? prev : [...prev, saved]))
+      setCategory(saved) // langsung pindah ke kategori baru
       const saved = await createMenuCategory(name)
       setCategoryOptions((prev) => (prev.some((c) => c.id === saved.id) ? prev : [...prev, saved]))
       setCategory(saved.name) // langsung pindah ke kategori baru

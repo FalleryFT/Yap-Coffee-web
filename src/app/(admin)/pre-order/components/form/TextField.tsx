@@ -13,9 +13,12 @@ interface Props {
   autoFocus?: boolean
   /** Terkunci: tampil seperti biasa tetapi tidak bisa diubah. */
   disabled?: boolean
+  /** Jenis input; 'password' untuk kata sandi. */
+  type?: 'text' | 'password'
+  autoComplete?: string
 }
 
-export function TextField({ label, value, onChange, placeholder, icon: Icon, error, autoFocus, disabled }: Props) {
+export function TextField({ label, value, onChange, placeholder, icon: Icon, error, autoFocus, disabled, type = 'text', autoComplete }: Props) {
   const id = useId()
   return (
     <FieldShell label={label} htmlFor={id} error={error}>
@@ -25,6 +28,8 @@ export function TextField({ label, value, onChange, placeholder, icon: Icon, err
           id={id}
           value={value}
           disabled={disabled}
+          type={type}
+          autoComplete={autoComplete}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
           autoFocus={autoFocus}
