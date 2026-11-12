@@ -28,6 +28,9 @@ export interface PreOrderSchedule {
   location: string
   locationDetail: string
   mapsUrl?: string  
+  /** Titik di peta aplikasi pelanggan; kosong bila belum diisi. */
+  latitude?: number
+  longitude?: number
   pickupTime: string // '08:30 - 11:30 WIB'
   cutOff: string // '07:00 WIB' (tampilan menambah awalan "Cut-off: ")
   cutOffUrgent: boolean
@@ -55,6 +58,8 @@ export interface MenuItem {
   image?: string
   /** Tampil di katalog pre-order pelanggan. false = disembunyikan. */
   available: boolean
+  /** true = minuman (pelanggan memilih ukuran dan tingkat manis), false = makanan. Menurut jenis kategorinya. */
+  hasOptions?: boolean
 }
 
 export interface WeeklyRevenuePoint {

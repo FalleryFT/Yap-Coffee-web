@@ -14,3 +14,9 @@ export interface AdminLoginResult {
   token: string
   user: AdminUser
 }
+
+export interface ChangePasswordPayload {
+  current_password: string
+  password: string
+  password_confirmation: string
+}

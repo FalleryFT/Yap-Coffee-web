@@ -23,7 +23,7 @@ interface MenuCardProps {
 export function MenuCard({ item, onEdit, onDelete }: MenuCardProps) {
   const status = getStockStatus(item.stock)
   const soldOut = status === 'habis'
-  const PlaceholderIcon = item.category === 'Makanan Ringan' ? Cookie : Coffee
+  const PlaceholderIcon = item.hasOptions === false ? Cookie : Coffee
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card">

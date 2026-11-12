@@ -1,4 +1,4 @@
-import { parseGoogleMapsUrl } from '@/lib/maps'
+import { parseCoordinates, parseGoogleMapsUrl } from '@/lib/maps'
 import type { PreOrderSchedule } from '@/types/admin'
 import type { Errors, FormState, ScheduleFormValues } from '@/types/preOrder'
 
@@ -14,6 +14,7 @@ export function toState(schedule?: PreOrderSchedule): FormState {
       location: '',
       locationDetail: '',
       mapsUrl: '',
+      coordinates: '',
       pickupStart: '',
       pickupEnd: '',
       cutOffTime: '',
@@ -27,6 +28,10 @@ export function toState(schedule?: PreOrderSchedule): FormState {
     location: schedule.location,
     locationDetail: schedule.locationDetail,
     mapsUrl: schedule.mapsUrl ?? '',
+    coordinates:
+      schedule.latitude !== undefined && schedule.longitude !== undefined
+        ? `${schedule.latitude}, ${schedule.longitude}`
+        : '',
     pickupStart,
     pickupEnd,
     cutOffTime,
@@ -38,6 +43,9 @@ export function validate(values: FormState, isEdit = false): Errors {
   const errors: Errors = {}
   if (!values.name.trim()) errors.name = 'Nama kloter wajib diisi.'
   if (!values.location.trim()) errors.location = 'Nama titik lokasi wajib diisi.'
+  if (values.coordinates.trim() && !parseCoordinates(values.coordinates)) {
+    errors.coordinates = 'Format: latitude, longitude. Contoh: -7.9525, 112.6128'
+  }
   if (isEdit) return errors
 
   if (!values.date) errors.date = 'Tanggal wajib dipilih.'
@@ -65,6 +73,7 @@ export function toSubmitValues(values: FormState): ScheduleFormValues {
     location: values.location.trim(),
     locationDetail: values.locationDetail.trim(),
     mapsUrl: values.mapsUrl.trim(),
+    coordinates: values.coordinates.trim(),
     pickupTime: `${values.pickupStart} - ${values.pickupEnd} WIB`,
     cutOff: `${values.cutOffTime} WIB`,
   }

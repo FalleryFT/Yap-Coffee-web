@@ -13,6 +13,8 @@ interface ApiMenuItem {
   price: number
   stock: number
   image?: string
+  available: boolean
+  hasOptions: boolean
   addons: (AddonPayload & { id: number })[]
 }
 
@@ -23,6 +25,7 @@ export interface MenuPayload {
   price: number
   stock: number
   image?: string | null
+  available: boolean
   addons: AddonPayload[]
 }
 
@@ -35,6 +38,8 @@ function toMenuItem(row: ApiMenuItem): MenuItem {
     price: row.price,
     stock: row.stock,
     image: toImageUrl(row.image),
+    available: row.available,
+    hasOptions: row.hasOptions,
     addons: row.addons.map(formatAddon),
   }
 }
@@ -49,6 +54,7 @@ export function toCreatePayload(data: Partial<MenuItem>): MenuPayload {
     stock: data.stock ?? 0,
     // Berisi nama berkas hasil uploadMenuImage; blob: lokal tidak boleh ikut terkirim.
     image: data.image && !data.image.startsWith('blob:') ? data.image : null,
+    available: data.available ?? true,
     addons: (data.addons ?? []).map(parseAddon),
   }
 }
@@ -63,6 +69,8 @@ export function toUpdatePayload(data: Partial<MenuItem>, original: MenuItem): Pa
     payload.category = data.category
   if (data.price !== undefined && data.price !== original.price) payload.price = data.price
   if (data.stock !== undefined && data.stock !== original.stock) payload.stock = data.stock
+  if (data.available !== undefined && data.available !== original.available)
+    payload.available = data.available
   if (data.addons !== undefined && data.addons.join('|') !== original.addons.join('|'))
     payload.addons = data.addons.map(parseAddon)
   // Foto dihapus di form → null; foto baru → nama berkas hasil unggah.
@@ -75,6 +83,20 @@ export function toUpdatePayload(data: Partial<MenuItem>, original: MenuItem): Pa
 export async function getMenuItems(): Promise<MenuItem[]> {
   const { data } = await http.get<ApiSuccess<ApiMenuItem[]>>('/admin/menu')
   return data.data.map(toMenuItem)
+}
+
+export async function getMenuCategories(): Promise<string[]> {
+  const { data } = await http.get<ApiSuccess<{ id: number; name: string }[]>>('/admin/menu/categories')
+  return data.data.map((c) => c.name)
+}
+
+/** Mengembalikan nama kategori seperti yang tersimpan (sudah di-trim oleh backend). */
+export async function createMenuCategory(name: string, hasOptions: boolean): Promise<string> {
+  const { data } = await http.post<ApiSuccess<{ id: number; name: string }>>('/admin/menu/categories', {
+    name,
+    hasOptions,
+  })
+  return data.data.name
 }
 
 export async function createMenuItem(payload: MenuPayload): Promise<MenuItem> {

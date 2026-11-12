@@ -1,6 +1,7 @@
 import { http } from '@/lib/http'
 import type { ApiSuccess } from '@/types/api'
 import type { PreOrderSchedule } from '@/types/admin'
+import { parseCoordinates } from '@/lib/maps'
 import type { ScheduleFormValues } from '@/types/preOrder'
 
 // Badan permintaan tambah jadwal (backend/src/validators/scheduleValidators.ts → createScheduleSchema).
@@ -10,16 +11,22 @@ export interface CreateSchedulePayload {
   location: string
   locationDetail: string
   mapsUrl: string
+  /** Bila kosong, server mencoba membacanya dari link Maps. */
+  latitude?: number
+  longitude?: number
   pickupStart: string // 'HH:mm'
   pickupEnd: string // 'HH:mm'
   cutOffTime: string // 'HH:mm'
 }
 
-// Saat edit, backend hanya menerima tiga kolom ini (tanggal, maps, dan jam terkunci).
+// Saat edit, backend hanya menerima kolom ini (tanggal, maps, dan jam terkunci).
 export interface UpdateSchedulePayload {
   name: string
   location: string
   locationDetail: string
+  /** null = hapus titik di peta. */
+  latitude: number | null
+  longitude: number | null
 }
 
 const BASE = '/admin/pre-order/schedules'
@@ -33,12 +40,14 @@ function parseTimes(text: string): string[] {
 export function toCreatePayload(values: ScheduleFormValues): CreateSchedulePayload {
   const [pickupStart = '', pickupEnd = ''] = parseTimes(values.pickupTime)
   const [cutOffTime = ''] = parseTimes(values.cutOff)
+  const point = parseCoordinates(values.coordinates)
   return {
     name: values.name,
     date: values.date,
     location: values.location,
     locationDetail: values.locationDetail,
     mapsUrl: values.mapsUrl,
+    ...(point ? { latitude: point.latitude, longitude: point.longitude } : {}),
     pickupStart,
     pickupEnd,
     cutOffTime,
@@ -46,10 +55,13 @@ export function toCreatePayload(values: ScheduleFormValues): CreateSchedulePaylo
 }
 
 export function toUpdatePayload(values: ScheduleFormValues): UpdateSchedulePayload {
+  const point = parseCoordinates(values.coordinates)
   return {
     name: values.name,
     location: values.location,
     locationDetail: values.locationDetail,
+    latitude: point?.latitude ?? null,
+    longitude: point?.longitude ?? null,
   }
 }
 

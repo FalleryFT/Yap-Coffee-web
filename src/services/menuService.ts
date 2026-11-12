@@ -14,6 +14,7 @@ interface ApiMenuItem {
   stock: number
   image?: string
   available: boolean
+  hasOptions: boolean
   addons: (AddonPayload & { id: number })[]
 }
 
@@ -38,6 +39,7 @@ function toMenuItem(row: ApiMenuItem): MenuItem {
     stock: row.stock,
     image: toImageUrl(row.image),
     available: row.available,
+    hasOptions: row.hasOptions,
     addons: row.addons.map(formatAddon),
   }
 }
@@ -89,8 +91,11 @@ export async function getMenuCategories(): Promise<string[]> {
 }
 
 /** Mengembalikan nama kategori seperti yang tersimpan (sudah di-trim oleh backend). */
-export async function createMenuCategory(name: string): Promise<string> {
-  const { data } = await http.post<ApiSuccess<{ id: number; name: string }>>('/admin/menu/categories', { name })
+export async function createMenuCategory(name: string, hasOptions: boolean): Promise<string> {
+  const { data } = await http.post<ApiSuccess<{ id: number; name: string }>>('/admin/menu/categories', {
+    name,
+    hasOptions,
+  })
   return data.data.name
 }
 

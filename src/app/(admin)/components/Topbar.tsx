@@ -2,7 +2,8 @@
 
 import { Bell, CalendarDays, Menu, Store, User } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { outlet, today } from '@/data/dummy'
+import { today } from '@/data/dummy'
+import { useOutletName } from '@/hooks/settings/useOutletName'
 
 interface TopbarProps {
   onMenuClick: () => void
@@ -11,6 +12,7 @@ interface TopbarProps {
 export function Topbar({ onMenuClick }: TopbarProps) {
   // Desain halaman Pre-Order memakai penanda "Sistem Online", halaman lain memakai lonceng + profil.
   const showOnlinePill = usePathname() === '/pre-order'
+  const outletName = useOutletName()
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-cream/90 px-4 backdrop-blur sm:px-6 lg:px-8">
@@ -33,7 +35,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <span className="size-1 rounded-full bg-mist" aria-hidden="true" />
           <span className="flex items-center gap-2">
             <Store size={16} strokeWidth={1.75} />
-            {outlet.name}
+            {outletName || 'Outlet'}
           </span>
         </span>
       </div>
