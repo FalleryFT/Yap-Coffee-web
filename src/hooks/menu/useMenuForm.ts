@@ -16,7 +16,11 @@ export function useMenuForm(
 
   const [name, setName] = useState(item?.name ?? '')
   const [desc, setDesc] = useState(item?.description ?? '')
-  const [category, setCategory] = useState<MenuCategory>(item?.category ?? categories[0] ?? '')
+  // Menu tanpa kategori (kategori asalnya dihapus) sengaja dimulai kosong agar admin
+  // wajib memilih kategori sebelum menyimpan.
+  const [category, setCategory] = useState<MenuCategory>(
+    item ? (item.category ?? '') : (categories[0] ?? ''),
+  )
   const [price, setPrice] = useState(item?.price ?? 0)
   const [stock, setStock] = useState(item?.stock ?? 25)
   const [available, setAvailable] = useState(item?.available ?? true)

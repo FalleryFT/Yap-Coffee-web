@@ -42,7 +42,7 @@ export function MenuCard({ item, onEdit, onDelete }: MenuCardProps) {
           {stockLabel(status, item.stock)}
         </span>
         <span className="absolute top-2.5 right-2.5 rounded-md bg-white/90 px-2.5 py-1 text-xs font-semibold text-espresso">
-          {item.category}
+          {item.category ?? 'Tanpa Kategori'}
         </span>
         {!item.available && (
           <span className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-espresso/85 px-3 py-1 text-xs font-semibold text-white">

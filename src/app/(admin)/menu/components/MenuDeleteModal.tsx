@@ -88,7 +88,7 @@ export function MenuDeleteModal({ item, onClose, onConfirm }: MenuDeleteModalPro
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 text-[12px] text-bark">
-              <span>{item.category}</span>
+              <span>{item.category ?? 'Tanpa Kategori'}</span>
               <span>•</span>
               <span className="font-semibold text-espresso">Rp {formatNumber(item.price)}</span>
             </div>

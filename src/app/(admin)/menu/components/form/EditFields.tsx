@@ -71,10 +71,10 @@ export function AvailabilityToggle({ form }: { form: MenuForm }) {
         aria-checked={available}
         aria-label="Tersedia di Katalog Pre-Order"
         onClick={() => setAvailable((v) => !v)}
-        className={`relative h-7 w-12 rounded-full transition-colors ${available ? 'bg-olive' : 'bg-mist'}`}
+        className={`inline-flex h-7 w-12 shrink-0 items-center overflow-hidden rounded-full p-0.5 transition-colors ${available ? 'bg-olive' : 'bg-mist'}`}
       >
         <span
-          className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${available ? 'translate-x-5' : 'translate-x-0.5'}`}
+          className={`block size-6 shrink-0 rounded-full bg-white shadow transition-transform ${available ? 'translate-x-5' : 'translate-x-0'}`}
         />
       </button>
     </div>

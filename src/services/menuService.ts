@@ -65,8 +65,7 @@ export function toUpdatePayload(data: Partial<MenuItem>, original: MenuItem): Pa
   if (data.name !== undefined && data.name !== original.name) payload.name = data.name
   if (data.description !== undefined && data.description !== original.description)
     payload.description = data.description
-  if (data.category !== undefined && data.category !== original.category)
-    payload.category = data.category
+  if (data.category != null && data.category !== original.category) payload.category = data.category
   if (data.price !== undefined && data.price !== original.price) payload.price = data.price
   if (data.stock !== undefined && data.stock !== original.stock) payload.stock = data.stock
   if (data.available !== undefined && data.available !== original.available)
@@ -85,9 +84,14 @@ export async function getMenuItems(): Promise<MenuItem[]> {
   return data.data.map(toMenuItem)
 }
 
-export async function getMenuCategories(): Promise<string[]> {
-  const { data } = await http.get<ApiSuccess<{ id: number; name: string }[]>>('/admin/menu/categories')
-  return data.data.map((c) => c.name)
+export interface MenuCategoryOption {
+  id: number
+  name: string
+}
+
+export async function getMenuCategories(): Promise<MenuCategoryOption[]> {
+  const { data } = await http.get<ApiSuccess<MenuCategoryOption[]>>('/admin/menu/categories')
+  return data.data
 }
 
 /** Mengembalikan nama kategori seperti yang tersimpan (sudah di-trim oleh backend). */
@@ -97,6 +101,22 @@ export async function createMenuCategory(name: string, hasOptions: boolean): Pro
     hasOptions,
   })
   return data.data.name
+/** Mengembalikan kategori seperti yang tersimpan (nama sudah di-trim oleh backend). */
+export async function createMenuCategory(name: string): Promise<MenuCategoryOption> {
+  const { data } = await http.post<ApiSuccess<MenuCategoryOption>>('/admin/menu/categories', { name })
+  return data.data
+}
+
+/**
+ * Menghapus kategori. Tanpa `moveTo`, backend menolak (409) kalau masih dipakai menu;
+ * `moveTo` angka memindahkan menu ke kategori itu, `'none'` melepas menunya dari kategori
+ * (tetap tampil di filter "Semua"). Tidak ada menu yang ikut terhapus.
+ */
+export async function deleteMenuCategory(id: number, moveTo?: number | 'none'): Promise<void> {
+  await http.delete(
+    `/admin/menu/categories/${id}`,
+    moveTo === undefined ? undefined : { params: { moveTo } },
+  )
 }
 
 export async function createMenuItem(payload: MenuPayload): Promise<MenuItem> {
