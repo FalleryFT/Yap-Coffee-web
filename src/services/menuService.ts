@@ -94,16 +94,12 @@ export async function getMenuCategories(): Promise<MenuCategoryOption[]> {
   return data.data
 }
 
-/** Mengembalikan nama kategori seperti yang tersimpan (sudah di-trim oleh backend). */
-export async function createMenuCategory(name: string, hasOptions: boolean): Promise<string> {
-  const { data } = await http.post<ApiSuccess<{ id: number; name: string }>>('/admin/menu/categories', {
+/** Mengembalikan kategori seperti yang tersimpan (nama sudah di-trim oleh backend). */
+export async function createMenuCategory(name: string, hasOptions = true): Promise<MenuCategoryOption> {
+  const { data } = await http.post<ApiSuccess<MenuCategoryOption>>('/admin/menu/categories', {
     name,
     hasOptions,
   })
-  return data.data.name
-/** Mengembalikan kategori seperti yang tersimpan (nama sudah di-trim oleh backend). */
-export async function createMenuCategory(name: string): Promise<MenuCategoryOption> {
-  const { data } = await http.post<ApiSuccess<MenuCategoryOption>>('/admin/menu/categories', { name })
   return data.data
 }
 
