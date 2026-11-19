@@ -2,7 +2,7 @@ import { ChevronDown, Lock } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import dayjs from 'dayjs'
 import { TimeClock } from '@mui/x-date-pickers/TimeClock'
-import { useId } from 'react'
+import { useId, useLayoutEffect, useRef, useState } from 'react'
 import { usePopover } from '@/hooks/pre-order/usePopover'
 import { FieldShell, boxClass } from './FieldShell'
 
@@ -32,6 +32,22 @@ export function TimeClockField({
 }: Props) {
   const id = useId()
   const { isOpen, setIsOpen, containerRef } = usePopover()
+  const popupRef = useRef<HTMLDivElement>(null)
+  const [openUp, setOpenUp] = useState(false)
+
+  // Buka ke bawah kalau muat; kalau ruang di bawah kurang dan di atas lebih lega, buka ke atas.
+  // Diukur sebelum browser menggambar, jadi popup tidak sempat "loncat".
+  useLayoutEffect(() => {
+    if (!isOpen) return
+    const trigger = containerRef.current
+    const popup = popupRef.current
+    if (!trigger || !popup) return
+    const rect = trigger.getBoundingClientRect()
+    const needed = popup.offsetHeight + 8
+    const spaceBelow = window.innerHeight - rect.bottom
+    const spaceAbove = rect.top
+    setOpenUp(spaceBelow < needed && spaceAbove > spaceBelow)
+  }, [isOpen, containerRef])
 
   const clockValue = value ? dayjs(`2000-01-01T${value}`) : null
 
@@ -66,11 +82,12 @@ export function TimeClockField({
 
         {isOpen && !disabled && (
           <div
+            ref={popupRef}
             role="dialog"
             aria-label={`Pilih ${label}`}
-            className={`absolute top-full z-40 mt-1.5 rounded-xl border border-line bg-white p-3 shadow-xl ${
-              align === 'right' ? 'right-0' : 'left-0'
-            }`}
+            className={`absolute z-40 rounded-xl border border-line bg-white p-3 shadow-xl ${
+              openUp ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+            } ${align === 'right' ? 'right-0' : 'left-0'}`}
           >
             <p className="text-center text-2xl font-bold text-espresso tabular-nums">
               {value || '--:--'}

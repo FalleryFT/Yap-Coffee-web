@@ -40,7 +40,7 @@ export function DescField({ form }: { form: MenuForm }) {
       <textarea
         value={desc}
         onChange={(e) => setDesc(e.target.value.slice(0, isEdit ? descMax : 9999))}
-        rows={3}
+        rows={4}
         placeholder="Jelaskan bahan utama, asal biji kopi, notes rasa (misal: manis legit, hint cokelat karamel)..."
         className={`${inputCls} resize-none`}
       />
