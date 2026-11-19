@@ -32,7 +32,7 @@ export function ScheduleFormModal({ mode, schedule, onSubmit, onClose }: Schedul
   const form = useScheduleForm(schedule, onSubmit)
 
   return (
-    <Modal onClose={onClose} labelledBy={titleId}>
+    <Modal onClose={onClose} labelledBy={titleId} widthClass="max-w-3xl">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <ThemeProvider theme={clockTheme}>
           <form onSubmit={form.handleSubmit} noValidate>

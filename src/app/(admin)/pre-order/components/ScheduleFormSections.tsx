@@ -60,15 +60,15 @@ export function ScheduleFormSections({ isEdit, schedule, values, errors, update,
       </Section>
 
       <Section step={2} title={isEdit ? 'Set Lokasi (Titik Temu Pengambilan)' : 'Set Lokasi'}>
-        <TextField
-          label="Nama Titik Lokasi Pengambilan"
-          value={values.location}
-          onChange={(v) => update('location', v)}
-          placeholder="Contoh: Gedung Sipil UB"
-          icon={MapPin}
-          error={errors.location}
-        />
-        <div className="flex flex-col gap-2">
+        <div className="grid items-start gap-3 sm:grid-cols-2">
+          <TextField
+            label="Nama Titik Lokasi Pengambilan"
+            value={values.location}
+            onChange={(v) => update('location', v)}
+            placeholder="Contoh: Gedung Sipil UB"
+            icon={MapPin}
+            error={errors.location}
+          />
           <TextField
             label="Link Google Maps (wajib)"
             value={values.mapsUrl}
@@ -78,21 +78,12 @@ export function ScheduleFormSections({ isEdit, schedule, values, errors, update,
             error={mapsError}
             disabled={locked}
           />
-          {!mapsResult && !locked && (
-            <p className="text-xs text-mist">
-              Buka Google Maps, pilih lokasi pengambilan, lalu salin URL dari address bar.
-              Peta ini akan tampil di sisi pelanggan.
-            </p>
-          )}
-          {mapsResult?.ok && (
-            <MapsEmbed
-              url={values.mapsUrl}
-              title={`Peta ${values.location || 'titik pengambilan'}`}
-              className="h-44"
-            />
-          )}
-        </div>
-        <div className="flex flex-col gap-2">
+          <TextField
+            label="Catatan / Detail Titik Temu"
+            value={values.locationDetail}
+            onChange={(v) => update('locationDetail', v)}
+            placeholder="Contoh: Drop Box Gazebo Tengah Lantai 1"
+          />
           <TextField
             label="Koordinat Titik di Peta (opsional)"
             value={values.coordinates}
@@ -101,14 +92,23 @@ export function ScheduleFormSections({ isEdit, schedule, values, errors, update,
             icon={LocateFixed}
             error={errors.coordinates}
           />
-          <p className="text-xs text-mist">{coordinatesHint}</p>
         </div>
-        <TextField
-          label="Catatan / Detail Titik Temu"
-          value={values.locationDetail}
-          onChange={(v) => update('locationDetail', v)}
-          placeholder="Contoh: Drop Box Gazebo Tengah Lantai 1"
-        />
+        <div className="flex flex-col gap-2">
+          {!mapsResult && !locked && (
+            <p className="text-xs text-mist">
+              Buka Google Maps, pilih lokasi pengambilan, lalu salin URL dari address bar.
+              Peta ini akan tampil di sisi pelanggan.
+            </p>
+          )}
+          <p className="text-xs text-mist">{coordinatesHint}</p>
+          {mapsResult?.ok && (
+            <MapsEmbed
+              url={values.mapsUrl}
+              title={`Peta ${values.location || 'titik pengambilan'}`}
+              className="h-44"
+            />
+          )}
+        </div>
       </Section>
 
       <Section step={3} title={isEdit ? 'Set Jam (Pickup & Cut-off)' : 'Set Jam'}>
