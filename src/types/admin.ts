@@ -47,6 +47,11 @@ export interface TopMenuItem {
   image?: string
 }
 
+export interface MenuAddon {
+  label: string
+  extra_price: number // rupiah, tanpa format; 0 = gratis
+}
+
 export interface MenuItem {
   id: number
   name: string
@@ -55,7 +60,7 @@ export interface MenuItem {
   category: MenuCategory | null
   price: number // rupiah, tanpa format
   stock: number // sisa stok harian; status dihitung dari angka ini
-  addons: string[] // pilihan modifikasi, contoh 'Oat Milk +5k'
+  addons: MenuAddon[] // pilihan modifikasi/varian, contoh { label: 'Oat Milk', extra_price: 5000 }
   image?: string
   /** Tampil di katalog pre-order pelanggan. false = disembunyikan. */
   available: boolean
