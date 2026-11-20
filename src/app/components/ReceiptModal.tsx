@@ -21,7 +21,7 @@ export function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#2a1a0c]/45 p-4 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}

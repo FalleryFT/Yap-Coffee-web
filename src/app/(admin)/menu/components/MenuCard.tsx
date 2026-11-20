@@ -1,5 +1,6 @@
 import { Coffee, Cookie, EyeOff, Pencil, Trash2 } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
+import { formatAddon } from '@/utils/menu'
 import { getStockStatus } from '@/utils/menu'
 import type { MenuItem, StockStatus } from '@/types/admin'
 
@@ -60,8 +61,8 @@ export function MenuCard({ item, onEdit, onDelete }: MenuCardProps) {
         {item.addons.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-2">
             {item.addons.map((addon) => (
-              <li key={addon} className="rounded bg-sand px-2.5 py-1 text-xs text-bark">
-                {addon}
+              <li key={addon.label} className="rounded bg-sand px-2.5 py-1 text-xs text-bark">
+                {formatAddon(addon)}
               </li>
             ))}
           </ul>

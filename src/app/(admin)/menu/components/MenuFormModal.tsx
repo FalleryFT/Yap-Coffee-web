@@ -67,7 +67,7 @@ export function MenuFormModal({ mode, item, onClose, onSave, categories }: MenuF
         </p>
       )}
 
-      <MenuFormFooter isEdit={isEdit} canSave={Boolean(form.name) && Boolean(form.category) && !form.saving} onClose={onClose} onSave={form.handleSave} />
+      <MenuFormFooter isEdit={isEdit} canSave={Boolean(form.name) && Boolean(form.category) && form.price > 0 && !form.saving} onClose={onClose} onSave={form.handleSave} />
     </Modal>
   )
 }

@@ -1,5 +1,5 @@
 import { http } from '@/lib/http'
-import { formatAddon, parseAddon, toImageUrl } from '@/utils/menu'
+import { toImageUrl } from '@/utils/menu'
 import type { ApiSuccess } from '@/types/api'
 import type { MenuItem } from '@/types/admin'
 import type { AddonPayload } from '@/utils/menu'
@@ -40,7 +40,7 @@ function toMenuItem(row: ApiMenuItem): MenuItem {
     image: toImageUrl(row.image),
     available: row.available,
     hasOptions: row.hasOptions,
-    addons: row.addons.map(formatAddon),
+    addons: row.addons.map(({ label, extra_price }) => ({ label, extra_price })),
   }
 }
 
@@ -55,7 +55,7 @@ export function toCreatePayload(data: Partial<MenuItem>): MenuPayload {
     // Berisi nama berkas hasil uploadMenuImage; blob: lokal tidak boleh ikut terkirim.
     image: data.image && !data.image.startsWith('blob:') ? data.image : null,
     available: data.available ?? true,
-    addons: (data.addons ?? []).map(parseAddon),
+    addons: data.addons ?? [],
   }
 }
 
@@ -70,8 +70,8 @@ export function toUpdatePayload(data: Partial<MenuItem>, original: MenuItem): Pa
   if (data.stock !== undefined && data.stock !== original.stock) payload.stock = data.stock
   if (data.available !== undefined && data.available !== original.available)
     payload.available = data.available
-  if (data.addons !== undefined && data.addons.join('|') !== original.addons.join('|'))
-    payload.addons = data.addons.map(parseAddon)
+  if (data.addons !== undefined && JSON.stringify(data.addons) !== JSON.stringify(original.addons))
+    payload.addons = data.addons
   // Foto dihapus di form → null; foto baru → nama berkas hasil unggah.
   if (original.image && data.image === undefined) payload.image = null
   else if (data.image && data.image !== original.image && !data.image.startsWith('blob:'))
