@@ -2,12 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 import { tokenStorage } from '@/lib/tokenStorage'
-import { useAdminProfile } from '@/hooks/admin/useAdminProfile'
 import { useDrawerLock } from '@/hooks/admin/useDrawerLock'
 import { SidebarBrand } from './sidebar/SidebarBrand'
 import { SidebarFooter } from './sidebar/SidebarFooter'
 import { SidebarNav } from './sidebar/SidebarNav'
-import { SidebarProfile } from './sidebar/SidebarProfile'
 
 interface SidebarProps {
   /** Hanya relevan di bawah breakpoint lg (lihat SidebarProps di AdminLayout). Di lg ke atas sidebar selalu tampil. */
@@ -17,7 +15,6 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const router = useRouter()
-  const profile = useAdminProfile()
   useDrawerLock(open, onClose)
 
   function logout() {
@@ -51,7 +48,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         ].join(' ')}
       >
         <SidebarBrand onClose={onClose} />
-        <SidebarProfile profile={profile} />
         <SidebarNav onClose={onClose} />
         <SidebarFooter onLogout={logout} />
       </aside>
