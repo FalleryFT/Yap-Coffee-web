@@ -6,7 +6,7 @@ export interface StoreContactPreview {
   instagramHandle: string // '@yap_coffee_'
 }
 
-/** Respons GET dan PUT /admin/settings. */
+/** Respons GET dan PUT /admin/settings (halaman Outlet & Kontak Penjual). */
 export interface StoreSettings {
   outletName: string
   whatsapp: string // bentuk lokal untuk form, contoh '081231242277'
@@ -18,23 +18,4 @@ export interface StoreSettingsPayload {
   outletName: string
   whatsapp: string
   instagram: string
-}
-
-/** Ukuran gelas yang dipilih pelanggan, contoh Reguler (16 oz) atau Large (22 oz, +5.000). */
-export interface SizeOption {
-  label: string
-  detail: string
-  extraPrice: number
-  isDefault: boolean
-}
-
-export interface SugarOption {
-  label: string
-  isDefault: boolean
-}
-
-/** Respons GET dan PUT /admin/settings/options. */
-export interface MenuOptions {
-  sizes: SizeOption[]
-  sugarLevels: SugarOption[]
 }

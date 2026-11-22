@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { emitSettingsChanged } from '@/lib/appEvents'
+import { emitAdminDataChanged } from '@/lib/appEvents'
 import { toApiError } from '@/lib/apiError'
 import { changeAdminPassword, getAdminProfile, updateAdminName } from '@/services/authService'
 import type { AdminUser } from '@/types/auth'
@@ -61,7 +61,7 @@ export function useAdminAccount() {
       setAdmin(user)
       setName(user.name)
       setNameNotice('Nama berhasil diperbarui.')
-      emitSettingsChanged() // sidebar ikut memperbarui nama
+      emitAdminDataChanged() // sidebar ikut memperbarui nama
     } catch (err) {
       const apiError = toApiError(err)
       setNameError(apiError.errorFor('name') ?? apiError.message)

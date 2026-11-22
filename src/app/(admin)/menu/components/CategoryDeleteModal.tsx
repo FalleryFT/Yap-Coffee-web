@@ -31,8 +31,11 @@ export function CategoryDeleteModal({
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Chip "Semua" bawaan tidak punya id, jadi otomatis tidak ikut jadi tujuan.
-  const targets = categories.filter((c) => c.id !== undefined && c.id !== chip.id)
+  // Chip "Semua" bawaan tidak punya id, jadi otomatis tidak ikut jadi tujuan. Menu hanya boleh
+  // pindah ke kategori sejenis (minuman ↔ minuman, makanan ↔ makanan).
+  const targets = categories.filter(
+    (c) => c.id !== undefined && c.id !== chip.id && c.hasOptions === chip.hasOptions,
+  )
   const [targetValue, setTargetValue] = useState(() => targets[0]?.value ?? SEMUA_CHIP.value)
   const target =
     targetValue === SEMUA_CHIP.value

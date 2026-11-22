@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react'
 import { Modal } from '@/app/components/Modal'
+import type { MenuCategoryOption } from '@/services/menuService'
 import type { MenuItem } from '@/types/admin'
 import { useMenuForm } from '@/hooks/menu/useMenuForm'
 import type { MenuFormMode } from '@/types/menu'
@@ -10,8 +11,10 @@ import { AddonsEditor } from './form/AddonsEditor'
 import { AvailabilityToggle } from './form/EditFields'
 import { MenuFormFooter } from './form/MenuFormFooter'
 import { MenuFormHeader } from './form/MenuFormHeader'
+import { MenuTypeField } from './form/MenuTypeField'
 import { DescField, NameField } from './form/NameDescFields'
 import { PhotoAdd } from './form/PhotoAdd'
+import { SizeSugarEditor } from './form/SizeSugarEditor'
 
 interface MenuFormModalProps {
   mode: MenuFormMode
@@ -19,8 +22,8 @@ interface MenuFormModalProps {
   item?: MenuItem
   onClose: () => void
   onSave: (data: Partial<MenuItem>) => Promise<void>
-  /** Nama kategori yang bisa dipilih di form. */
-  categories: string[]
+  /** Semua kategori beserta jenisnya; form hanya menampilkan yang sejenis dengan menu. */
+  categories: MenuCategoryOption[]
 }
 
 export function MenuFormModal({ mode, item, onClose, onSave, categories }: MenuFormModalProps) {
@@ -45,7 +48,14 @@ export function MenuFormModal({ mode, item, onClose, onSave, categories }: MenuF
             <DescField form={form} />
           </div>
         </div>
+
+        {/* Jenis menu: di bawah foto dan deskripsi; menentukan kategori dan ukuran/manis di bawahnya */}
+        <MenuTypeField form={form} />
+
         <AddCategoryStockPrice form={form} />
+
+        {/* Ukuran Gelas & Tingkat Manis: hanya untuk Minuman, di atas Pilihan Modifikasi & Varian */}
+        {form.menuType === 'minuman' && <SizeSugarEditor form={form} />}
 
         {/* Pilihan Modifikasi & Varian: tampil di mode Tambah dan Edit dengan tata letak sama */}
         <AddonsEditor form={form} />

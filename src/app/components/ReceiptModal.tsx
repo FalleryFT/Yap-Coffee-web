@@ -20,37 +20,40 @@ export function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
   const r = receipt
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose()
-      }}
-    >
+    // Overlay yang di-scroll (bukan panel), sehingga scrollbar ada di pojok kanan layar seperti popup menu.
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/35">
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Struk ${r.receiptNo}`}
-        className="relative max-h-[92vh] w-full max-w-[460px] overflow-y-auto rounded-[20px] bg-white text-[#3b2a1c] shadow-[0_24px_60px_-12px_rgba(74,42,16,0.35)]"
+        className="flex min-h-full items-center justify-center p-4"
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) onClose()
+        }}
       >
-        {/* aksen atas */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#6b4a2e] to-[#ecd9c6]" />
-
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Tutup struk"
-          className="absolute right-5 top-6 rounded-md p-1 text-[#4a3526] transition hover:bg-[#f3f1ea] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6b4a2e]"
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Struk ${r.receiptNo}`}
+          className="relative w-full max-w-[460px] overflow-hidden rounded-[20px] bg-white text-[#3b2a1c] shadow-[0_24px_60px_-12px_rgba(74,42,16,0.35)]"
         >
-          <X size={18} />
-        </button>
+          {/* aksen atas */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-[#6b4a2e] to-[#ecd9c6]" />
 
-        <div className="px-6 pb-6 pt-5">
-          <ReceiptStoreInfo r={r} />
-          <ReceiptItems r={r} />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Tutup struk"
+            className="absolute right-5 top-6 rounded-md p-1 text-[#4a3526] transition hover:bg-[#f3f1ea] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6b4a2e]"
+          >
+            <X size={18} />
+          </button>
 
-          <hr className="my-5 border-t border-dashed border-[#d9d3c8]" />
+          <div className="px-6 pb-6 pt-5">
+            <ReceiptStoreInfo r={r} />
+            <ReceiptItems r={r} />
 
-          <ReceiptTotals r={r} />
+            <hr className="my-5 border-t border-dashed border-[#d9d3c8]" />
+
+            <ReceiptTotals r={r} />
+          </div>
         </div>
       </div>
     </div>

@@ -71,7 +71,7 @@ export function MenuScreen() {
       {modal.type === 'add' && (
         <MenuFormModal
           mode="add"
-          categories={menu.categories}
+          categories={menu.categoryOptions}
           onClose={closeModal}
           onSave={menu.handleSave}
         />
@@ -80,7 +80,7 @@ export function MenuScreen() {
         <MenuFormModal
           mode="edit"
           item={modal.item}
-          categories={menu.categories}
+          categories={menu.categoryOptions}
           onClose={closeModal}
           onSave={menu.handleSave}
         />

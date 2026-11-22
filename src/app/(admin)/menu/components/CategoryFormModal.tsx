@@ -19,7 +19,6 @@ export function CategoryFormModal({ existing, onClose, onSave }: CategoryFormMod
   const titleId = useId()
   const stableClose = useCallback(() => onClose(), [onClose])
   const [name, setName] = useState('')
-  // Minuman: pelanggan memilih ukuran dan tingkat manis. Makanan: tanpa pilihan.
   const [hasOptions, setHasOptions] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -93,12 +92,12 @@ export function CategoryFormModal({ existing, onClose, onSave }: CategoryFormMod
         <legend className={labelCls}>Jenis Kategori</legend>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { value: true, title: 'Minuman', hint: 'Pelanggan memilih ukuran dan tingkat manis' },
-            { value: false, title: 'Makanan', hint: 'Tanpa pilihan ukuran dan manis' },
+            { value: true, title: 'Minuman' },
+            { value: false, title: 'Makanan' },
           ].map((option) => (
             <label
               key={option.title}
-              className={`flex cursor-pointer flex-col gap-0.5 rounded-lg border px-3 py-2.5 ${
+              className={`flex cursor-pointer items-center rounded-lg border px-3 py-2.5 ${
                 hasOptions === option.value ? 'border-espresso bg-peach/40' : 'border-line bg-white hover:bg-sand'
               }`}
             >
@@ -111,7 +110,6 @@ export function CategoryFormModal({ existing, onClose, onSave }: CategoryFormMod
                 />
                 {option.title}
               </span>
-              <span className="text-[12px] text-bark">{option.hint}</span>
             </label>
           ))}
         </div>

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { onSettingsChanged } from '@/lib/appEvents'
-import { getStoreSettings } from '@/services/settingsService'
+import { onAdminDataChanged } from '@/lib/appEvents'
+import { getStoreSettings } from '@/services/outletService'
 
-/** Nama outlet yang diatur di halaman Pengaturan; kosong selama belum termuat. */
+/** Nama outlet untuk Topbar (diatur di halaman Outlet & Kontak Penjual); kosong selama belum termuat. */
 export function useOutletName(): string {
   const [name, setName] = useState('')
 
@@ -11,9 +11,9 @@ export function useOutletName(): string {
     const load = () =>
       getStoreSettings()
         .then((settings) => active && setName(settings.outletName))
-        .catch(() => {})
+        .catch(() => {}) // gagal memuat: Topbar tetap tampil dengan tulisan "Outlet"
     load()
-    const stopListening = onSettingsChanged(load)
+    const stopListening = onAdminDataChanged(load)
     return () => {
       active = false
       stopListening()

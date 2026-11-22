@@ -52,6 +52,23 @@ export interface MenuAddon {
   extra_price: number // rupiah, tanpa format; 0 = gratis
 }
 
+/** Jenis menu; dipilih saat menu dibuat dan terkunci setelahnya. */
+export type MenuType = 'makanan' | 'minuman'
+
+/** Ukuran gelas satu menu minuman, contoh Reguler (16 oz) atau Large (22 oz, +5.000). */
+export interface MenuSize {
+  label: string
+  oz: number | null // angka saja; "oz" ditambahkan saat ditampilkan
+  extraPrice: number // tambahan harga per gelas, rupiah tanpa format
+  isDefault: boolean
+}
+
+/** Tingkat manis satu menu minuman. */
+export interface MenuSugar {
+  label: string
+  isDefault: boolean
+}
+
 export interface MenuItem {
   id: number
   name: string
@@ -64,8 +81,14 @@ export interface MenuItem {
   image?: string
   /** Tampil di katalog pre-order pelanggan. false = disembunyikan. */
   available: boolean
-  /** true = minuman (pelanggan memilih ukuran dan tingkat manis), false = makanan. Menurut jenis kategorinya. */
+  /** Jenis menu; tidak bisa diubah setelah dibuat. */
+  menuType: MenuType
+  /** true = minuman, false = makanan (turunan dari menuType). */
   hasOptions?: boolean
+  /** Ukuran gelas (hanya minuman, boleh kosong). */
+  sizes: MenuSize[]
+  /** Tingkat manis (hanya minuman, boleh kosong). */
+  sugarLevels: MenuSugar[]
 }
 
 export interface WeeklyRevenuePoint {

@@ -1,8 +1,8 @@
-'use client'
+  'use client'
 
 import { CircleCheck, KeyRound, User } from 'lucide-react'
 import type { FormEvent } from 'react'
-import { useAdminAccount } from '@/hooks/settings/useAdminAccount'
+import { useAdminAccount } from '@/hooks/profile/useAdminAccount'
 import { Section } from '../../pre-order/components/form/Section'
 import { TextField } from '../../pre-order/components/form/TextField'
 
@@ -37,7 +37,7 @@ export function AdminAccountSection() {
   return (
     <div className="flex flex-col gap-4">
       <form onSubmit={submitName} noValidate className="flex flex-col gap-4">
-        <Section step={2} title="Nama Admin">
+        <Section title="Nama Admin">
           <TextField
             label="Nama"
             value={a.name}
@@ -68,7 +68,7 @@ export function AdminAccountSection() {
       </form>
 
       <form onSubmit={submitPassword} noValidate className="flex flex-col gap-4">
-        <Section step={3} title="Ganti Kata Sandi">
+        <Section title="Ganti Kata Sandi">
           <TextField
             label="Kata Sandi Saat Ini"
             type="password"

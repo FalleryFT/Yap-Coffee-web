@@ -107,6 +107,7 @@ export function useMenuItems() {
         id: c.id,
         value: c.name,
         label: c.name,
+        hasOptions: c.hasOptions,
         count: items.filter((item) => item.category === c.name).length,
       })),
     ],
@@ -132,7 +133,7 @@ export function useMenuItems() {
   }, [items, category, stock, search])
 
   return {
-    items, categories, loading, loadError, reload, chips, activeCount, soldOutCount, visible,
+    items, categories, categoryOptions, loading, loadError, reload, chips, activeCount, soldOutCount, visible,
     category, setCategory, search, setSearch, stock, setStock,
     modal, setModal, closeModal, handleSave, handleAddCategory, handleDeleteCategory, handleDelete,
   }
