@@ -3,7 +3,7 @@
 import { CalendarDays, Menu, Store } from 'lucide-react'
 import { today } from '@/data/dummy'
 import { useAdminProfile } from '@/hooks/admin/useAdminProfile'
-import { useOutletName } from '@/hooks/settings/useOutletName'
+import { useOutletName } from '@/hooks/outlet/useOutletName'
 import { TopbarProfileMenu } from './TopbarProfileMenu'
 
 interface TopbarProps {

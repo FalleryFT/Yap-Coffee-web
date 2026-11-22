@@ -1,13 +1,18 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { User } from 'lucide-react'
+import Link from 'next/link'
+import { Store, User, UserCog } from 'lucide-react'
 import { adminJobTitle } from '@/data/dummy'
 import type { AdminUser } from '@/types/auth'
 
 // Avatar bulat berisi huruf awal nama admin. Bila diklik, muncul kartu menu di bawahnya
-// (gaya menu profil GitHub). Isi menunya belum ada selain identitas admin; item lain
-// (Profil, Pengaturan, dst.) tinggal ditambahkan di bawah garis pemisah.
+// (gaya menu profil GitHub): identitas admin, lalu menu Profile & Keamanan dan Outlet & Kontak Penjual.
+const menuItems = [
+  { label: 'Profile & Keamanan', href: '/profile', icon: UserCog },
+  { label: 'Outlet & Kontak Penjual', href: '/outlet', icon: Store },
+]
+
 export function TopbarProfileMenu({ profile }: { profile: AdminUser | null }) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -62,7 +67,20 @@ export function TopbarProfileMenu({ profile }: { profile: AdminUser | null }) {
             </div>
           </div>
           <div className="border-t border-line" />
-          {/* Item menu (Profil, Pengaturan, dll.) ditambahkan di sini nanti. */}
+          <div className="p-1.5">
+            {menuItems.map(({ label, href, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-espresso transition hover:bg-espresso/5"
+              >
+                <Icon size={16} strokeWidth={1.75} className="shrink-0 text-mocha" aria-hidden />
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>

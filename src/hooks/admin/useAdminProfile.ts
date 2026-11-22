@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { onSettingsChanged } from '@/lib/appEvents'
+import { onAdminDataChanged } from '@/lib/appEvents'
 import { getAdminProfile } from '@/services/authService'
 import type { AdminUser } from '@/types/auth'
 
@@ -13,8 +13,8 @@ export function useAdminProfile() {
         .then((user) => active && setProfile(user))
         .catch(() => {}) // gagal memuat: sidebar tetap tampil dengan placeholder
     load()
-    // Nama admin diganti di halaman Pengaturan: muat ulang agar sidebar langsung ikut berubah.
-    const stopListening = onSettingsChanged(load)
+    // Nama admin diganti di halaman Profile: muat ulang agar sidebar langsung ikut berubah.
+    const stopListening = onAdminDataChanged(load)
     return () => {
       active = false
       stopListening()

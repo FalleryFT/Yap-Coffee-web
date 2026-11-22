@@ -2,7 +2,7 @@
 
 import { AtSign, CircleCheck, ExternalLink, MessageCircle, Store } from 'lucide-react'
 import type { FormEvent } from 'react'
-import { useStoreSettings } from '@/hooks/settings/useStoreSettings'
+import { useStoreSettings } from '@/hooks/outlet/useStoreSettings'
 import { Section } from '../../pre-order/components/form/Section'
 import { TextField } from '../../pre-order/components/form/TextField'
 
@@ -31,7 +31,7 @@ export function StoreSection() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-      <Section step={1} title="Outlet & Kontak Penjual">
+      <Section title="Outlet & Kontak Penjual">
         <TextField
           label="Nama Outlet"
           value={s.outletName}

@@ -1,7 +1,7 @@
 import { http } from '@/lib/http'
 import { toImageUrl } from '@/utils/menu'
 import type { ApiSuccess } from '@/types/api'
-import type { MenuItem } from '@/types/admin'
+import type { MenuItem, MenuSize, MenuSugar, MenuType } from '@/types/admin'
 import type { AddonPayload } from '@/utils/menu'
 
 // Bentuk menu dari backend (backend/src/controllers/adminMenuController.ts → toMenuDto).
@@ -14,8 +14,11 @@ interface ApiMenuItem {
   stock: number
   image?: string
   available: boolean
+  menuType: MenuType
   hasOptions: boolean
   addons: (AddonPayload & { id: number })[]
+  sizes: (MenuSize & { detail?: string })[]
+  sugarLevels: MenuSugar[]
 }
 
 export interface MenuPayload {
@@ -27,7 +30,14 @@ export interface MenuPayload {
   image?: string | null
   available: boolean
   addons: AddonPayload[]
+  /** Hanya dikirim saat membuat menu; jenis menu terkunci setelahnya. */
+  menuType: MenuType
+  sizes: MenuSize[]
+  sugarLevels: MenuSugar[]
 }
+
+/** Payload ubah menu: tanpa menuType (terkunci). */
+export type MenuUpdatePayload = Partial<Omit<MenuPayload, 'menuType'>>
 
 function toMenuItem(row: ApiMenuItem): MenuItem {
   return {
@@ -39,8 +49,11 @@ function toMenuItem(row: ApiMenuItem): MenuItem {
     stock: row.stock,
     image: toImageUrl(row.image),
     available: row.available,
-    hasOptions: row.hasOptions,
+    menuType: row.menuType,
+    hasOptions: row.menuType === 'minuman',
     addons: row.addons.map(({ label, extra_price }) => ({ label, extra_price })),
+    sizes: (row.sizes ?? []).map(({ label, oz, extraPrice, isDefault }) => ({ label, oz, extraPrice, isDefault })),
+    sugarLevels: (row.sugarLevels ?? []).map(({ label, isDefault }) => ({ label, isDefault })),
   }
 }
 
@@ -56,12 +69,16 @@ export function toCreatePayload(data: Partial<MenuItem>): MenuPayload {
     image: data.image && !data.image.startsWith('blob:') ? data.image : null,
     available: data.available ?? true,
     addons: data.addons ?? [],
+    menuType: data.menuType ?? 'minuman',
+    // Makanan tidak punya pilihan ukuran dan manis.
+    sizes: data.menuType === 'makanan' ? [] : (data.sizes ?? []),
+    sugarLevels: data.menuType === 'makanan' ? [] : (data.sugarLevels ?? []),
   }
 }
 
 /** Mengirim hanya kolom yang berubah dibanding `original`. */
-export function toUpdatePayload(data: Partial<MenuItem>, original: MenuItem): Partial<MenuPayload> {
-  const payload: Partial<MenuPayload> = {}
+export function toUpdatePayload(data: Partial<MenuItem>, original: MenuItem): MenuUpdatePayload {
+  const payload: MenuUpdatePayload = {}
   if (data.name !== undefined && data.name !== original.name) payload.name = data.name
   if (data.description !== undefined && data.description !== original.description)
     payload.description = data.description
@@ -72,6 +89,16 @@ export function toUpdatePayload(data: Partial<MenuItem>, original: MenuItem): Pa
     payload.available = data.available
   if (data.addons !== undefined && JSON.stringify(data.addons) !== JSON.stringify(original.addons))
     payload.addons = data.addons
+  // Ukuran dan manis hanya untuk minuman; jenis menu tidak pernah ikut dikirim.
+  if (original.menuType === 'minuman') {
+    if (data.sizes !== undefined && JSON.stringify(data.sizes) !== JSON.stringify(original.sizes))
+      payload.sizes = data.sizes
+    if (
+      data.sugarLevels !== undefined &&
+      JSON.stringify(data.sugarLevels) !== JSON.stringify(original.sugarLevels)
+    )
+      payload.sugarLevels = data.sugarLevels
+  }
   // Foto dihapus di form → null; foto baru → nama berkas hasil unggah.
   if (original.image && data.image === undefined) payload.image = null
   else if (data.image && data.image !== original.image && !data.image.startsWith('blob:'))
@@ -87,6 +114,8 @@ export async function getMenuItems(): Promise<MenuItem[]> {
 export interface MenuCategoryOption {
   id: number
   name: string
+  /** true = kategori minuman, false = kategori makanan. */
+  hasOptions: boolean
 }
 
 export async function getMenuCategories(): Promise<MenuCategoryOption[]> {
@@ -120,7 +149,7 @@ export async function createMenuItem(payload: MenuPayload): Promise<MenuItem> {
   return toMenuItem(data.data)
 }
 
-export async function updateMenuItem(id: number, payload: Partial<MenuPayload>): Promise<MenuItem> {
+export async function updateMenuItem(id: number, payload: MenuUpdatePayload): Promise<MenuItem> {
   const { data } = await http.put<ApiSuccess<ApiMenuItem>>(`/admin/menu/${id}`, payload)
   return toMenuItem(data.data)
 }

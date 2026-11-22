@@ -15,4 +15,6 @@ export interface CategoryChip {
   value: MenuCategory | 'semua'
   label: string
   count: number
+  /** true = kategori minuman, false = kategori makanan; tidak ada untuk chip "Semua". */
+  hasOptions?: boolean
 }

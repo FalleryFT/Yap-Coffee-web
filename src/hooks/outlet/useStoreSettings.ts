@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { emitSettingsChanged } from '@/lib/appEvents'
+import { emitAdminDataChanged } from '@/lib/appEvents'
 import { toApiError } from '@/lib/apiError'
-import { getStoreSettings, updateStoreSettings } from '@/services/settingsService'
-import type { StoreSettings } from '@/types/settings'
+import { getStoreSettings, updateStoreSettings } from '@/services/outletService'
+import type { StoreSettings } from '@/types/outlet'
 
 type FieldErrors = Partial<Record<'outletName' | 'whatsapp' | 'instagram', string>>
 
@@ -72,7 +72,7 @@ export function useStoreSettings() {
       setWhatsapp(result.whatsapp)
       setInstagram(result.instagram)
       setNotice('Tersimpan. Aplikasi pelanggan langsung memakai data yang baru.')
-      emitSettingsChanged() // Topbar ikut memperbarui nama outlet
+      emitAdminDataChanged() // Topbar ikut memperbarui nama outlet
     } catch (err) {
       const apiError = toApiError(err)
       const hasFieldErrors = Object.keys(apiError.fieldErrors).length > 0
