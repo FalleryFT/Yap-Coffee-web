@@ -38,7 +38,7 @@ export function OrderTable({ orders, loading, page, totalPages, total, onPage, o
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-16 text-center text-bark">
+                <td colSpan={7} className="h-56 text-center! align-middle text-bark">
                   {loading ? 'Memuat pesanan…' : 'Tidak ada pesanan pada filter ini.'}
                 </td>
               </tr>
