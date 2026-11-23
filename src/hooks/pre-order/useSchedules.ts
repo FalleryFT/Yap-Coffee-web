@@ -11,9 +11,19 @@ import {
 import type { PreOrderSchedule } from '@/types/admin'
 import type { Dialog, ScheduleFormValues } from '@/types/preOrder'
 
+const STATUS_ORDER: Record<PreOrderSchedule['status'], number> = {
+  aktif: 0,
+  mendatang: 1,
+  berakhir: 2,
+}
+
+// Aktif dulu, lalu mendatang, berakhir paling bawah; di dalam grup urut tanggal lalu jam.
 function sortSchedules(list: PreOrderSchedule[]): PreOrderSchedule[] {
   return [...list].sort(
-    (a, b) => a.date.localeCompare(b.date) || a.pickupTime.localeCompare(b.pickupTime),
+    (a, b) =>
+      STATUS_ORDER[a.status] - STATUS_ORDER[b.status] ||
+      a.date.localeCompare(b.date) ||
+      a.pickupTime.localeCompare(b.pickupTime),
   )
 }
 

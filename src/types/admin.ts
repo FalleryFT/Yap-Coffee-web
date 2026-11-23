@@ -1,7 +1,7 @@
 export type OrderStatus = 'menunggu' | 'meramu' | 'siap_ambil' | 'selesai'
 export type AvatarTone = 'peach' | 'sage' | 'gray'
 export type HintTone = 'danger' | 'olive' | 'muted'
-export type ScheduleStatus = 'aktif' | 'mendatang'
+export type ScheduleStatus = 'aktif' | 'mendatang' | 'berakhir'
 // Kategori dikelola admin (tabel menu_categories), jadi bukan lagi daftar tetap.
 export type MenuCategory = string
 export type StockStatus = 'tersedia' | 'menipis' | 'habis'

@@ -3,6 +3,7 @@ import { MapsEmbed } from '@/app/components/MapsEmbed'
 import { coordinatesFromMapsUrl } from '@/lib/maps'
 import type { PreOrderSchedule } from '@/types/admin'
 import type { Errors, FormState } from '@/types/preOrder'
+import { cutOffDateLabel } from '@/utils/cutOff'
 import { DateField } from './form/DateField'
 import { Section } from './form/Section'
 import { TextField } from './form/TextField'
@@ -36,6 +37,11 @@ export function ScheduleFormSections({ isEdit, schedule, values, errors, update,
     : detected
       ? `Terbaca dari link: ${detected.latitude}, ${detected.longitude}. Itu yang dipakai untuk peta di aplikasi.`
       : 'Link ini tidak memuat koordinat, jadi peta di aplikasi belum tampil. Di Google Maps, klik kanan pada titik lalu salin angka paling atas (contoh: -7.9525, 112.6128).'
+
+  // Cut-off berlaku H-1: jam yang dipilih jatuh pada hari sebelum tanggal pengambilan.
+  const cutOffHint = values.date
+    ? `Cut-off H-1: pemesanan ditutup ${cutOffDateLabel(values.date)}${values.cutOffTime ? ` pukul ${values.cutOffTime} WIB` : ''}.`
+    : 'Cut-off H-1: jam yang dipilih berlaku pada hari sebelum tanggal pengambilan.'
 
   return (
     <>
@@ -132,16 +138,17 @@ export function ScheduleFormSections({ isEdit, schedule, values, errors, update,
             disabled={locked}
           />
           <TimeClockField
-            label="Batas pesan (Cut-off)"
+            label="Batas pesan (Cut-off H-1)"
             value={values.cutOffTime}
             onChange={(v) => update('cutOffTime', v)}
-            placeholder="07:00 WIB"
+            placeholder="20:00 WIB"
             icon={AlarmClockOff}
             error={errors.cutOffTime}
             align="right"
             disabled={locked}
           />
         </div>
+        <p className="text-xs text-mist">{cutOffHint}</p>
       </Section>
     </>
   )

@@ -1,10 +1,12 @@
 import { Clock, MapPin, Pencil, Trash2 } from 'lucide-react'
 import { describeDate } from '@/lib/format'
 import type { PreOrderSchedule, ScheduleStatus } from '@/types/admin'
+import { cutOffDateLabel } from '@/utils/cutOff'
 
 const statusStyle: Record<ScheduleStatus, { label: string; badge: string; dot?: string }> = {
   aktif: { label: 'Aktif', badge: 'bg-[#e8ecd8] text-olive', dot: 'bg-olive' },
   mendatang: { label: 'Mendatang', badge: 'bg-[#e9e6df] text-bark' },
+  berakhir: { label: 'Berakhir', badge: 'bg-sand text-mist' },
 }
 
 interface Props {
@@ -18,7 +20,7 @@ export function ScheduleRow({ schedule: s, onEdit, onDelete }: Props) {
   const status = statusStyle[s.status]
 
   return (
-    <tr className="align-middle text-sm">
+    <tr className={['align-middle text-sm', s.status === 'berakhir' ? 'opacity-60' : ''].join(' ')}>
       <td className="px-4 py-4">
         <div className="flex items-start gap-3">
           <span className="flex size-11 shrink-0 flex-col items-center justify-center rounded-lg bg-peach leading-none text-mocha">
@@ -46,12 +48,13 @@ export function ScheduleRow({ schedule: s, onEdit, onDelete }: Props) {
           <div>
             <p className="font-semibold text-espresso">{s.pickupTime}</p>
             <span
+              title={`Pemesanan ditutup ${cutOffDateLabel(s.date)}`}
               className={[
                 'mt-1 inline-block rounded px-2 py-0.5 text-xs',
                 s.cutOffUrgent ? 'bg-danger-soft font-semibold text-danger' : 'bg-sand text-bark',
               ].join(' ')}
             >
-              Cut-off: {s.cutOff}
+              Cut-off H-1: {s.cutOff}
             </span>
           </div>
         </div>
