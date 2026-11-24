@@ -1,5 +1,4 @@
 import { RefreshCw, ShieldCheck } from 'lucide-react'
-import { shift } from '@/data/dummy'
 
 interface Props {
   syncLabel: string
@@ -13,10 +12,6 @@ export function DashboardHeader({ syncLabel, onResync }: Props) {
         <p className="flex items-center gap-2 text-xs font-medium tracking-wide text-olive uppercase">
           <ShieldCheck size={14} />
           Sistem Operasional Aktif
-          <span className="text-mist">•</span>
-          <span className="text-bark normal-case">
-            {shift.label} ({shift.hours})
-          </span>
         </p>
         <h1 className="mt-2 text-4xl font-bold text-espresso">Selamat Datang, Admin Yap Coffee</h1>
         <p className="mt-2 max-w-xl text-sm">

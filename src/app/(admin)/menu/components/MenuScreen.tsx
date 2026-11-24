@@ -1,5 +1,6 @@
 'use client'
 
+import { MenuGridSkeleton } from '@/app/components/skeleton/PageSkeletons'
 import { useMenuItems } from '@/hooks/menu/useMenuItems'
 import { CategoryFormModal } from './CategoryFormModal'
 import { MenuCard } from './MenuCard'
@@ -37,9 +38,7 @@ export function MenuScreen() {
       />
 
       {menu.loading ? (
-        <p className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm text-mist">
-          Memuat menu…
-        </p>
+        <MenuGridSkeleton />
       ) : menu.loadError ? (
         <div className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm">
           <p className="text-danger">{menu.loadError}</p>

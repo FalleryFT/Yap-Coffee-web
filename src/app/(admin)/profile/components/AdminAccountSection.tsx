@@ -1,7 +1,8 @@
-  'use client'
+'use client'
 
 import { CircleCheck, KeyRound, User } from 'lucide-react'
 import type { FormEvent } from 'react'
+import { FormSkeleton } from '@/app/components/skeleton/PageSkeletons'
 import { useAdminAccount } from '@/hooks/profile/useAdminAccount'
 import { Section } from '../../pre-order/components/form/Section'
 import { TextField } from '../../pre-order/components/form/TextField'
@@ -20,9 +21,7 @@ export function AdminAccountSection() {
     void a.savePassword()
   }
 
-  if (a.loading) {
-    return <p className="rounded-xl border border-line bg-white px-6 py-10 text-center text-sm text-mist">Memuat akun…</p>
-  }
+  if (a.loading) return <FormSkeleton fields={1} />
   if (a.loadError) {
     return (
       <div className="rounded-xl border border-line bg-white px-6 py-10 text-center text-sm">

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Store, User, UserCog } from 'lucide-react'
-import { adminJobTitle } from '@/data/dummy'
 import type { AdminUser } from '@/types/auth'
 
 // Avatar bulat berisi huruf awal nama admin. Bila diklik, muncul kartu menu di bawahnya
@@ -63,7 +62,7 @@ export function TopbarProfileMenu({ profile }: { profile: AdminUser | null }) {
               <p className="truncate text-sm font-semibold text-espresso">
                 {profile ? profile.name : 'Memuat...'}
               </p>
-              <p className="truncate text-xs text-mocha">{adminJobTitle}</p>
+              <p className="truncate text-xs text-mocha">{profile ? `@${profile.username}` : ''}</p>
             </div>
           </div>
           <div className="border-t border-line" />

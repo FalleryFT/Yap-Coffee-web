@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
+import { CACHE_KEYS } from '@/constants/cacheKeys'
+import { useCachedQuery } from '@/hooks/useCachedQuery'
 import { toApiError } from '@/lib/apiError'
 import {
   createSchedule,
@@ -17,6 +19,8 @@ const STATUS_ORDER: Record<PreOrderSchedule['status'], number> = {
   berakhir: 2,
 }
 
+const NO_SCHEDULES: PreOrderSchedule[] = []
+
 // Aktif dulu, lalu mendatang, berakhir paling bawah; di dalam grup urut tanggal lalu jam.
 function sortSchedules(list: PreOrderSchedule[]): PreOrderSchedule[] {
   return [...list].sort(
@@ -27,27 +31,15 @@ function sortSchedules(list: PreOrderSchedule[]): PreOrderSchedule[] {
   )
 }
 
+// Urutan disimpan di cache supaya tidak dihitung ulang tiap render.
+const fetchSortedSchedules = () => getSchedules().then(sortSchedules)
+
 export function useSchedules() {
-  const [schedules, setSchedules] = useState<PreOrderSchedule[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [reloadKey, setReloadKey] = useState(0)
+  const query = useCachedQuery(CACHE_KEYS.schedules, fetchSortedSchedules)
   const [dialog, setDialog] = useState<Dialog>(null)
 
-  useEffect(() => {
-    let active = true
-    setLoading(true)
-    setLoadError(null)
-    getSchedules()
-      .then((data) => active && setSchedules(sortSchedules(data)))
-      .catch((err) => active && setLoadError(toApiError(err).message))
-      .finally(() => active && setLoading(false))
-    return () => {
-      active = false
-    }
-  }, [reloadKey])
-
-  const reload = useCallback(() => setReloadKey((k) => k + 1), [])
+  const schedules = query.data ?? NO_SCHEDULES
+  const { mutate, reload } = query
   const closeDialog = useCallback(() => setDialog(null), [])
 
   // Galat sengaja dilempar ulang (sebagai ApiError) agar modal bisa menampilkannya.
@@ -55,7 +47,7 @@ export function useSchedules() {
   async function addSchedule(values: ScheduleFormValues) {
     try {
       const created = await createSchedule(toCreatePayload(values))
-      setSchedules((prev) => sortSchedules([...prev, created]))
+      mutate((prev) => sortSchedules([...prev, created]))
       closeDialog()
     } catch (err) {
       throw toApiError(err)
@@ -65,7 +57,7 @@ export function useSchedules() {
   async function editSchedule(target: PreOrderSchedule, values: ScheduleFormValues) {
     try {
       const updated = await updateSchedule(target.id, toUpdatePayload(values))
-      setSchedules((prev) => sortSchedules(prev.map((s) => (s.id === updated.id ? updated : s))))
+      mutate((prev) => sortSchedules(prev.map((s) => (s.id === updated.id ? updated : s))))
       closeDialog()
     } catch (err) {
       throw toApiError(err)
@@ -75,7 +67,7 @@ export function useSchedules() {
   async function deleteSchedule(target: PreOrderSchedule) {
     try {
       await deleteScheduleApi(target.id)
-      setSchedules((prev) => prev.filter((s) => s.id !== target.id))
+      mutate((prev) => prev.filter((s) => s.id !== target.id))
       closeDialog()
     } catch (err) {
       throw toApiError(err)
@@ -83,7 +75,7 @@ export function useSchedules() {
   }
 
   return {
-    schedules, loading, loadError, reload,
+    schedules, loading: query.isLoading, loadError: query.error, reload,
     dialog, setDialog, closeDialog,
     addSchedule, editSchedule, deleteSchedule,
   }

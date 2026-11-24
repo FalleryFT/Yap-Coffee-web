@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { CACHE_KEYS } from '@/constants/cacheKeys'
+import { useCachedQuery } from '@/hooks/useCachedQuery'
 import { toApiError } from '@/lib/apiError'
 import {
   createMenuCategory, createMenuItem, deleteMenuCategory, deleteMenuItem, getMenuCategories, getMenuItems,
@@ -8,35 +10,29 @@ import { getStockStatus } from '@/utils/menu'
 import type { MenuCategory, MenuItem, StockStatus } from '@/types/admin'
 import type { CategoryChip, ModalState } from '@/types/menu'
 
+const NO_ITEMS: MenuItem[] = []
+const NO_CATEGORIES: MenuCategoryOption[] = []
+
 export function useMenuItems() {
-  const [items, setItems] = useState<MenuItem[]>([])
-  const [categoryOptions, setCategoryOptions] = useState<MenuCategoryOption[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [reloadKey, setReloadKey] = useState(0)
+  const itemsQuery = useCachedQuery(CACHE_KEYS.menuItems, getMenuItems)
+  const categoriesQuery = useCachedQuery(CACHE_KEYS.menuCategories, getMenuCategories)
+
+  const items = itemsQuery.data ?? NO_ITEMS
+  const categoryOptions = categoriesQuery.data ?? NO_CATEGORIES
+  const loadError = itemsQuery.error ?? categoriesQuery.error
+  const loading = (itemsQuery.isLoading || categoriesQuery.isLoading) && loadError === null
+
   const [category, setCategory] = useState<MenuCategory | 'semua'>('semua')
   const [search, setSearch] = useState('')
   const [stock, setStock] = useState<StockStatus | 'semua'>('semua')
   const [modal, setModal] = useState<ModalState>({ type: 'none' })
 
-  useEffect(() => {
-    let active = true
-    setLoading(true)
-    setLoadError(null)
-    Promise.all([getMenuItems(), getMenuCategories()])
-      .then(([menuItems, options]) => {
-        if (!active) return
-        setItems(menuItems)
-        setCategoryOptions(options)
-      })
-      .catch((err) => active && setLoadError(toApiError(err).message))
-      .finally(() => active && setLoading(false))
-    return () => {
-      active = false
-    }
-  }, [reloadKey])
-
-  const reload = useCallback(() => setReloadKey((k) => k + 1), [])
+  const reloadItems = itemsQuery.reload
+  const reloadCategories = categoriesQuery.reload
+  const reload = useCallback(() => {
+    reloadItems()
+    reloadCategories()
+  }, [reloadItems, reloadCategories])
   const closeModal = useCallback(() => setModal({ type: 'none' }), [])
 
   // Galat sengaja dilempar ulang (sebagai ApiError) agar modal bisa menampilkannya.
@@ -44,12 +40,12 @@ export function useMenuItems() {
     try {
       if (modal.type === 'add') {
         const created = await createMenuItem(toCreatePayload(data))
-        setItems((prev) => [...prev, created])
+        itemsQuery.mutate((prev) => [...prev, created])
       } else if (modal.type === 'edit') {
         const payload = toUpdatePayload(data, modal.item)
         if (Object.keys(payload).length === 0) return
         const updated = await updateMenuItem(modal.item.id, payload)
-        setItems((prev) => prev.map((it) => (it.id === updated.id ? updated : it)))
+        itemsQuery.mutate((prev) => prev.map((it) => (it.id === updated.id ? updated : it)))
       }
     } catch (err) {
       throw toApiError(err)
@@ -60,7 +56,7 @@ export function useMenuItems() {
   async function handleAddCategory(name: string, hasOptions: boolean) {
     try {
       const saved = await createMenuCategory(name, hasOptions)
-      setCategoryOptions((prev) => (prev.some((c) => c.id === saved.id) ? prev : [...prev, saved]))
+      categoriesQuery.mutate((prev) => (prev.some((c) => c.id === saved.id) ? prev : [...prev, saved]))
       setCategory(saved.name) // langsung pindah ke kategori baru
     } catch (err) {
       throw toApiError(err)
@@ -75,10 +71,10 @@ export function useMenuItems() {
       const nextCategory =
         moveTo?.value === 'semua' ? null : (moveTo?.value as MenuCategory | undefined)
       await deleteMenuCategory(chip.id, moveTo?.value === 'semua' ? 'none' : moveTo?.id)
-      setCategoryOptions((prev) => prev.filter((c) => c.id !== chip.id))
+      categoriesQuery.mutate((prev) => prev.filter((c) => c.id !== chip.id))
       // Menu tidak ikut terhapus: samakan kategori barunya di layar tanpa memuat ulang.
       if (nextCategory !== undefined) {
-        setItems((prev) =>
+        itemsQuery.mutate((prev) =>
           prev.map((it) => (it.category === chip.value ? { ...it, category: nextCategory } : it)),
         )
       }
@@ -92,7 +88,7 @@ export function useMenuItems() {
   async function handleDelete(item: MenuItem) {
     try {
       await deleteMenuItem(item.id)
-      setItems((prev) => prev.filter((it) => it.id !== item.id))
+      itemsQuery.mutate((prev) => prev.filter((it) => it.id !== item.id))
     } catch (err) {
       throw toApiError(err)
     }

@@ -1,3 +1,4 @@
+import { TableRowsSkeleton } from '@/app/components/skeleton/Skeleton'
 import type { Order, OrderStatus } from '@/types/orders'
 import { OrderPagination } from './OrderPagination'
 import { OrderRow } from './OrderRow'
@@ -36,13 +37,16 @@ export function OrderTable({ orders, loading, page, totalPages, total, onPage, o
             {orders.map((o) => (
               <OrderRow key={o.id} order={o} onDetail={onDetail} onStatus={onStatus} onCancel={onCancel} />
             ))}
-            {orders.length === 0 && (
-              <tr>
-                <td colSpan={7} className="h-56 text-center! align-middle text-bark">
-                  {loading ? 'Memuat pesanan…' : 'Tidak ada pesanan pada filter ini.'}
-                </td>
-              </tr>
-            )}
+            {orders.length === 0 &&
+              (loading ? (
+                <TableRowsSkeleton cols={7} />
+              ) : (
+                <tr>
+                  <td colSpan={7} className="h-56 text-center! align-middle text-bark">
+                    Tidak ada pesanan pada filter ini.
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

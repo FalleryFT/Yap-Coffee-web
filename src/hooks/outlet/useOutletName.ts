@@ -1,24 +1,14 @@
-import { useEffect, useState } from 'react'
-import { onAdminDataChanged } from '@/lib/appEvents'
+import { CACHE_KEYS } from '@/constants/cacheKeys'
+import { useCachedQuery } from '@/hooks/useCachedQuery'
+import { TTL } from '@/lib/cache'
 import { getStoreSettings } from '@/services/outletService'
 
-/** Nama outlet untuk Topbar (diatur di halaman Outlet & Kontak Penjual); kosong selama belum termuat. */
+/**
+ * Nama outlet untuk Topbar (diatur di halaman Outlet & Kontak Penjual); kosong selama belum termuat.
+ * Berbagi cache dengan halaman Outlet, jadi perubahan di sana langsung tampil di sini.
+ */
 export function useOutletName(): string {
-  const [name, setName] = useState('')
-
-  useEffect(() => {
-    let active = true
-    const load = () =>
-      getStoreSettings()
-        .then((settings) => active && setName(settings.outletName))
-        .catch(() => {}) // gagal memuat: Topbar tetap tampil dengan tulisan "Outlet"
-    load()
-    const stopListening = onAdminDataChanged(load)
-    return () => {
-      active = false
-      stopListening()
-    }
-  }, [])
-
-  return name
+  // Gagal memuat: Topbar tetap tampil dengan tulisan "Outlet".
+  const { data } = useCachedQuery(CACHE_KEYS.storeSettings, getStoreSettings, { ttl: TTL.long })
+  return data?.outletName ?? ''
 }

@@ -1,4 +1,3 @@
-import { adminJobTitle } from '@/data/dummy'
 import type { AdminUser } from '@/types/auth'
 
 export function SidebarProfile({ profile }: { profile: AdminUser | null }) {
@@ -11,7 +10,7 @@ export function SidebarProfile({ profile }: { profile: AdminUser | null }) {
         <p className="truncate text-sm font-semibold text-espresso">
           {profile ? profile.name : 'Memuat...'}
         </p>
-        <p className="truncate text-xs text-mocha">{adminJobTitle}</p>
+        <p className="truncate text-xs text-mocha">{profile ? `@${profile.username}` : ''}</p>
       </div>
     </div>
   )

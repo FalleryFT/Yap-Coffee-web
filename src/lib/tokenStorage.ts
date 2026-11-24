@@ -1,3 +1,5 @@
+import { clearCache } from './cache'
+
 const TOKEN_KEY = 'yap_admin_token'
 
 // Next.js merender komponen client sekali di server sebelum hidrasi di browser.
@@ -9,9 +11,13 @@ const isBrowser = () => typeof window !== 'undefined'
 export const tokenStorage = {
   get: (): string | null => (isBrowser() ? localStorage.getItem(TOKEN_KEY) : null),
   set: (token: string): void => {
-    if (isBrowser()) localStorage.setItem(TOKEN_KEY, token)
+    if (!isBrowser()) return
+    localStorage.setItem(TOKEN_KEY, token)
+    clearCache() // akun bisa berbeda dari sesi sebelumnya
   },
   clear: (): void => {
-    if (isBrowser()) localStorage.removeItem(TOKEN_KEY)
+    if (!isBrowser()) return
+    localStorage.removeItem(TOKEN_KEY)
+    clearCache() // logout atau sesi berakhir: buang semua data tersimpan
   },
 }
