@@ -1,46 +1,37 @@
-import { useCallback, useEffect, useState } from 'react'
-import { emitAdminDataChanged } from '@/lib/appEvents'
+import { useCallback, useState } from 'react'
+import { CACHE_KEYS } from '@/constants/cacheKeys'
+import { useCachedQuery } from '@/hooks/useCachedQuery'
+import { TTL } from '@/lib/cache'
 import { toApiError } from '@/lib/apiError'
 import { getStoreSettings, updateStoreSettings } from '@/services/outletService'
-import type { StoreSettings } from '@/types/outlet'
 
 type FieldErrors = Partial<Record<'outletName' | 'whatsapp' | 'instagram', string>>
 
 /** Nama outlet, WhatsApp, dan Instagram toko. */
 export function useStoreSettings() {
-  const [saved, setSaved] = useState<StoreSettings | null>(null)
+  const query = useCachedQuery(CACHE_KEYS.storeSettings, getStoreSettings, { ttl: TTL.long })
+  const saved = query.data ?? null
+
   const [outletName, setOutletName] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [instagram, setInstagram] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [reloadKey, setReloadKey] = useState(0)
+  const [filled, setFilled] = useState(false)
 
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
-  useEffect(() => {
-    let active = true
-    setLoading(true)
-    setLoadError(null)
-    getStoreSettings()
-      .then((data) => {
-        if (!active) return
-        setSaved(data)
-        setOutletName(data.outletName)
-        setWhatsapp(data.whatsapp)
-        setInstagram(data.instagram)
-      })
-      .catch((err) => active && setLoadError(toApiError(err).message))
-      .finally(() => active && setLoading(false))
-    return () => {
-      active = false
-    }
-  }, [reloadKey])
+  // Form diisi sekali saat data pertama tersedia (dari cache atau server). Penyegaran di latar
+  // belakang hanya memperbarui `saved`, tidak menimpa ketikan yang sedang berjalan.
+  if (saved && !filled) {
+    setFilled(true)
+    setOutletName(saved.outletName)
+    setWhatsapp(saved.whatsapp)
+    setInstagram(saved.instagram)
+  }
 
-  const reload = useCallback(() => setReloadKey((k) => k + 1), [])
+  const { set: setSavedCache, reload } = query
 
   const dirty =
     saved !== null &&
@@ -67,12 +58,12 @@ export function useStoreSettings() {
         instagram: instagram.trim(),
       })
       // Form diisi ulang dengan nilai baku dari server (mis. parameter pelacak pada tautan sudah dibuang).
-      setSaved(result)
+      // Cache ikut diperbarui, sehingga nama outlet di Topbar langsung berubah.
+      setSavedCache(result)
       setOutletName(result.outletName)
       setWhatsapp(result.whatsapp)
       setInstagram(result.instagram)
       setNotice('Tersimpan. Aplikasi pelanggan langsung memakai data yang baru.')
-      emitAdminDataChanged() // Topbar ikut memperbarui nama outlet
     } catch (err) {
       const apiError = toApiError(err)
       const hasFieldErrors = Object.keys(apiError.fieldErrors).length > 0
@@ -85,7 +76,7 @@ export function useStoreSettings() {
     } finally {
       setSaving(false)
     }
-  }, [instagram, outletName, saving, whatsapp])
+  }, [instagram, outletName, saving, setSavedCache, whatsapp])
 
   const touch = (setter: (value: string) => void) => (value: string) => {
     setter(value)
@@ -100,8 +91,8 @@ export function useStoreSettings() {
     setOutletName: touch(setOutletName),
     setWhatsapp: touch(setWhatsapp),
     setInstagram: touch(setInstagram),
-    loading,
-    loadError,
+    loading: query.isLoading,
+    loadError: query.error,
     reload,
     saving,
     errors,

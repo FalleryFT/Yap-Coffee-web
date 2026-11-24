@@ -1,3 +1,4 @@
+import { invalidateCache } from '@/lib/cache'
 import { http } from '@/lib/http'
 import type { ApiSuccess } from '@/types/api'
 import type { Order, OrderPage, OrderStatsData, OrderStatus } from '@/types/orders'
@@ -23,6 +24,8 @@ const BASE = '/admin/orders'
 export const ORDERS_CHANGED_EVENT = 'orders:changed'
 
 function notifyOrdersChanged() {
+  // Pesanan, dashboard, dan riwayat ikut berubah: cache-nya ditandai kedaluwarsa.
+  invalidateCache('orders:', 'dashboard:', 'history:')
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(ORDERS_CHANGED_EVENT))
 }
 

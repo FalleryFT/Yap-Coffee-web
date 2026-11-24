@@ -1,6 +1,7 @@
 'use client'
 
 import { CirclePlus } from 'lucide-react'
+import { ScheduleListSkeleton } from '@/app/components/skeleton/PageSkeletons'
 import { useSchedules } from '@/hooks/pre-order/useSchedules'
 import { DeleteScheduleModal } from './DeleteScheduleModal'
 import { ScheduleFormModal } from './ScheduleFormModal'
@@ -33,9 +34,7 @@ export function PreOrderScreen() {
       </header>
 
       {loading ? (
-        <p className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm text-mist">
-          Memuat jadwal…
-        </p>
+        <ScheduleListSkeleton />
       ) : loadError ? (
         <div className="rounded-2xl border border-line bg-white px-6 py-14 text-center text-sm">
           <p className="text-danger">{loadError}</p>

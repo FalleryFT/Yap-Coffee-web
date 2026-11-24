@@ -1,5 +1,6 @@
 'use client'
 
+import { DashboardBodySkeleton } from '@/app/components/skeleton/PageSkeletons'
 import { useDashboard } from '@/hooks/dashboard/useDashboard'
 import { DashboardHeader } from './DashboardHeader'
 import { NewOrderBanner } from './NewOrderBanner'
@@ -35,22 +36,28 @@ export function DashboardScreen() {
         <ErrorNotice message={d.actionError} action={{ label: 'Tutup', run: d.dismissActionError }} />
       )}
 
-      {data?.newOrderAlert && <NewOrderBanner alert={data.newOrderAlert} />}
+      {d.loading ? (
+        <DashboardBodySkeleton />
+      ) : (
+        <>
+          {data?.newOrderAlert && <NewOrderBanner alert={data.newOrderAlert} />}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <WeeklyRevenueCard weekly={data?.weeklyRevenue ?? null} />
-        <TopMenuCard topMenu={data?.topMenu ?? null} />
-      </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+            <WeeklyRevenueCard weekly={data?.weeklyRevenue ?? null} />
+            <TopMenuCard topMenu={data?.topMenu ?? null} />
+          </div>
 
-      <TodaySummary summary={data?.summary ?? null} />
-      <OrderQueueTable
-        rows={data?.queue.items ?? []}
-        total={data?.queue.total ?? 0}
-        loading={d.loading}
-        query={d.query}
-        onQuery={d.setQuery}
-        onStatus={d.setStatus}
-      />
+          <TodaySummary summary={data?.summary ?? null} />
+          <OrderQueueTable
+            rows={data?.queue.items ?? []}
+            total={data?.queue.total ?? 0}
+            loading={d.loading}
+            query={d.query}
+            onQuery={d.setQuery}
+            onStatus={d.setStatus}
+          />
+        </>
+      )}
     </main>
   )
 }

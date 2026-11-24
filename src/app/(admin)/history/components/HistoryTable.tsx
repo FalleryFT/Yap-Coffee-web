@@ -1,3 +1,4 @@
+import { TableRowsSkeleton } from '@/app/components/skeleton/Skeleton'
 import type { HistoryRow } from '@/types/history'
 import { HistoryTableRow } from './HistoryTableRow'
 import { Th } from './ui'
@@ -27,13 +28,16 @@ export function HistoryTable({ rows, onReceipt, loading = false }: Props) {
           {rows.map((r) => (
             <HistoryTableRow key={r.id} row={r} onReceipt={onReceipt} />
           ))}
-          {rows.length === 0 && (
-            <tr>
-              <td colSpan={7} className="py-16 text-center text-bark">
-                {loading ? 'Memuat riwayat...' : 'Tidak ada transaksi yang cocok.'}
-              </td>
-            </tr>
-          )}
+          {rows.length === 0 &&
+            (loading ? (
+              <TableRowsSkeleton cols={7} />
+            ) : (
+              <tr>
+                <td colSpan={7} className="py-16 text-center text-bark">
+                  Tidak ada transaksi yang cocok.
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

@@ -4,6 +4,7 @@ import { Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { OrderRow } from '@/app/(admin)/orders/components/OrderRow'
 import { Th } from '@/app/(admin)/orders/components/ui'
+import { TableRowsSkeleton } from '@/app/components/skeleton/Skeleton'
 import type { Order, OrderStatus } from '@/types/orders'
 import { QueueHeader } from './QueueHeader'
 
@@ -35,13 +36,16 @@ export function OrderQueueTable({ rows, total, loading, query, onQuery, onStatus
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-sm text-mist">
-                  {loading ? 'Memuat pesanan...' : 'Tidak ada pesanan yang cocok.'}
-                </td>
-              </tr>
-            )}
+            {rows.length === 0 &&
+              (loading ? (
+                <TableRowsSkeleton cols={6} rows={4} />
+              ) : (
+                <tr>
+                  <td colSpan={6} className="px-4 py-10 text-center text-sm text-mist">
+                    Tidak ada pesanan yang cocok.
+                  </td>
+                </tr>
+              ))}
             {rows.map((o) => (
               <OrderRow key={o.id} order={o} onStatus={onStatus} />
             ))}

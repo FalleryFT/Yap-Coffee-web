@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { AdminShellSkeleton } from '@/app/components/skeleton/PageSkeletons'
 import { Sidebar } from './components/Sidebar'
 import { Topbar } from './components/Topbar'
 import { tokenStorage } from '@/lib/tokenStorage'
@@ -42,7 +43,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setReady(true)
   }, [router])
 
-  if (!ready) return null
+  // Kerangka sidebar + topbar selama token dicek, supaya layar tidak kosong.
+  if (!ready) return <AdminShellSkeleton />
 
   return (
     <div className="flex min-h-dvh">

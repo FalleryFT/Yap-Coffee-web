@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
+import { CACHE_KEYS } from '@/constants/cacheKeys'
 import { ORDERS_PAGE_SIZE, tabs } from '@/constants/orders'
+import { useCachedQuery } from '@/hooks/useCachedQuery'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import { TTL } from '@/lib/cache'
 import { toApiError } from '@/lib/apiError'
 import {
   cancelOrder as cancelOrderApi,
@@ -9,15 +12,10 @@ import {
   updateOrderStatus,
   type CancelOrderPayload,
 } from '@/services/orderService'
-import type { Order, OrderPage, OrderStatsData, OrderStatus } from '@/types/orders'
+import type { Order, OrderStatus } from '@/types/orders'
 
 export function useOrders() {
-  const [data, setData] = useState<OrderPage | null>(null)
-  const [stats, setStats] = useState<OrderStatsData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
-  const [reloadKey, setReloadKey] = useState(0)
 
   // Tab dan dropdown status sama-sama menjadi satu filter `status` di API,
   // jadi memilih salah satunya mengembalikan yang lain ke "Semua".
@@ -29,32 +27,24 @@ export function useOrders() {
   const search = useDebouncedValue(query.trim())
   const status = statusFilter !== 'Semua' ? statusFilter : tabs.find((t) => t.label === tab)?.status
 
+  const list = useCachedQuery(
+    CACHE_KEYS.ordersList(`${status ?? ''}|${search}|${page}`),
+    () => getOrders({ status, q: search || undefined, page, limit: ORDERS_PAGE_SIZE }),
+    { ttl: TTL.short, keepPrevious: true },
+  )
+  // Kartu statistik hanya pelengkap; bila gagal, angka lama tetap tampil.
+  const statsQuery = useCachedQuery(CACHE_KEYS.orderStats, getOrderStats, { ttl: TTL.short })
+
+  const data = list.data ?? null
+  const { reload: reloadList, mutate: mutateList } = list
+  const { reload: reloadStats } = statsQuery
+
+  // Data berkurang sehingga halaman ini sudah tidak ada: pindah ke halaman terakhir.
   useEffect(() => {
-    let active = true
-    setLoading(true)
-    setLoadError(null)
-    getOrders({ status, q: search || undefined, page, limit: ORDERS_PAGE_SIZE })
-      .then((result) => {
-        if (!active) return
-        // Data berkurang sehingga halaman ini sudah tidak ada: pindah ke halaman terakhir.
-        if (result.page > result.totalPages) setPage(result.totalPages)
-        else setData(result)
-      })
-      .catch((err) => active && setLoadError(toApiError(err).message))
-      .finally(() => active && setLoading(false))
-    return () => {
-      active = false
+    if (data && data.page === page && data.page > data.totalPages) {
+      setPage(Math.max(1, data.totalPages))
     }
-  }, [status, search, page, reloadKey])
-
-  const refreshStats = useCallback(() => {
-    // Kartu statistik hanya pelengkap; bila gagal, angka lama tetap tampil.
-    getOrderStats().then(setStats).catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    refreshStats()
-  }, [refreshStats, reloadKey])
+  }, [data, page])
 
   const setTab = useCallback((next: string) => {
     setTabState(next)
@@ -75,17 +65,18 @@ export function useOrders() {
 
   const reload = useCallback(() => {
     setActionError(null)
-    setReloadKey((k) => k + 1)
-  }, [])
+    reloadList()
+    reloadStats()
+  }, [reloadList, reloadStats])
 
   // Baris yang diubah diganti di tempat (tanpa memuat ulang daftar) supaya hasilnya langsung
   // terlihat; daftar mengikuti filter lagi pada pemuatan berikutnya.
   const replaceOrder = useCallback(
     (updated: Order) => {
-      setData((d) => d && { ...d, items: d.items.map((o) => (o.id === updated.id ? updated : o)) })
-      refreshStats()
+      mutateList((d) => ({ ...d, items: d.items.map((o) => (o.id === updated.id ? updated : o)) }))
+      reloadStats()
     },
-    [refreshStats],
+    [mutateList, reloadStats],
   )
 
   const setStatus = useCallback(
@@ -129,9 +120,9 @@ export function useOrders() {
     page,
     totalPages: data?.totalPages ?? 1,
     total: data?.total ?? 0,
-    stats,
-    loading,
-    loadError,
+    stats: statsQuery.data ?? null,
+    loading: list.isLoading,
+    loadError: list.error,
     actionError,
     dismissActionError: () => setActionError(null),
     tab, setTab,

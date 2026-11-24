@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
+import { CACHE_KEYS } from '@/constants/cacheKeys'
+import { useCachedQuery } from '@/hooks/useCachedQuery'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import { TTL } from '@/lib/cache'
 import { toApiError } from '@/lib/apiError'
 import { getDashboard } from '@/services/dashboardService'
 import { updateOrderStatus } from '@/services/orderService'
-import type { DashboardData } from '@/types/dashboard'
 import type { OrderStatus } from '@/types/orders'
 
 /** Dashboard memuat ulang sendiri tiap 30 detik selama tab terlihat. */
@@ -20,72 +22,59 @@ function syncText(lastSyncedAt: number | null, now: number, failed: boolean): st
 }
 
 export function useDashboard() {
-  const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
-  const [reloadKey, setReloadKey] = useState(0)
   const [query, setQuery] = useState('')
-  // Waktu terima di sisi klien (bukan jam server) supaya label tidak terpengaruh selisih jam.
-  const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(null)
   const [now, setNow] = useState(() => Date.now())
 
   const search = useDebouncedValue(query.trim())
 
-  // `loading` hanya true pada pemuatan pertama; muat ulang berikutnya diam-diam
-  // (data lama tetap tampil) supaya halaman tidak berkedip setiap 30 detik.
-  useEffect(() => {
-    let active = true
-    getDashboard({ q: search || undefined })
-      .then((result) => {
-        if (!active) return
-        setData(result)
-        setError(null)
-        setLastSyncedAt(Date.now())
-      })
-      .catch((err) => active && setError(toApiError(err).message))
-      .finally(() => active && setLoading(false))
-    return () => {
-      active = false
-    }
-  }, [search, reloadKey])
+  // Data lama tetap tampil saat memuat ulang (dari cache) supaya halaman tidak berkedip.
+  const dashboard = useCachedQuery(
+    CACHE_KEYS.dashboard(search),
+    () => getDashboard({ q: search || undefined }),
+    { ttl: TTL.short, keepPrevious: true },
+  )
+  const { reload } = dashboard
 
   useEffect(() => {
     const refresh = setInterval(() => {
-      if (document.visibilityState === 'visible') setReloadKey((k) => k + 1)
+      if (document.visibilityState === 'visible') reload()
     }, REFRESH_MS)
     const tick = setInterval(() => setNow(Date.now()), TICK_MS)
     return () => {
       clearInterval(refresh)
       clearInterval(tick)
     }
-  }, [])
+  }, [reload])
 
   const resync = useCallback(() => {
     setActionError(null)
-    setReloadKey((k) => k + 1)
-  }, [])
+    reload()
+  }, [reload])
 
   // Setelah status berubah, seluruh dashboard dimuat ulang karena banner dan ringkasan ikut berubah.
-  const setStatus = useCallback(async (id: string, next: OrderStatus) => {
-    setActionError(null)
-    try {
-      await updateOrderStatus(id, next)
-      setReloadKey((k) => k + 1)
-    } catch (err) {
-      setActionError(toApiError(err).message)
-    }
-  }, [])
+  const setStatus = useCallback(
+    async (id: string, next: OrderStatus) => {
+      setActionError(null)
+      try {
+        await updateOrderStatus(id, next)
+        reload()
+      } catch (err) {
+        setActionError(toApiError(err).message)
+      }
+    },
+    [reload],
+  )
 
   return {
-    data,
-    loading,
-    error,
+    data: dashboard.data ?? null,
+    loading: dashboard.data === undefined && dashboard.isLoading,
+    error: dashboard.error,
     actionError,
     dismissActionError: () => setActionError(null),
     query,
     setQuery,
-    syncLabel: syncText(lastSyncedAt, now, error !== null),
+    syncLabel: syncText(dashboard.updatedAt, now, dashboard.error !== null),
     resync,
     setStatus,
   }

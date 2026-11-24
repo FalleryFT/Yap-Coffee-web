@@ -1,7 +1,7 @@
 'use client'
 
+import { useState } from 'react'
 import { CalendarDays, Menu, Store } from 'lucide-react'
-import { today } from '@/data/dummy'
 import { useAdminProfile } from '@/hooks/admin/useAdminProfile'
 import { useOutletName } from '@/hooks/outlet/useOutletName'
 import { TopbarProfileMenu } from './TopbarProfileMenu'
@@ -10,10 +10,18 @@ interface TopbarProps {
   onMenuClick: () => void
 }
 
+const dateFormat = new Intl.DateTimeFormat('id-ID', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
+
 // Topbar sama di semua halaman admin (tanpa variasi per halaman).
 export function Topbar({ onMenuClick }: TopbarProps) {
   const outletName = useOutletName()
   const profile = useAdminProfile()
+  const [today] = useState(() => dateFormat.format(new Date()))
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-cream/90 px-4 backdrop-blur sm:px-6 lg:px-8">

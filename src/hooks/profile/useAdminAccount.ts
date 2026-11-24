@@ -1,19 +1,19 @@
-import { useCallback, useEffect, useState } from 'react'
-import { emitAdminDataChanged } from '@/lib/appEvents'
+import { useCallback, useState } from 'react'
+import { CACHE_KEYS } from '@/constants/cacheKeys'
+import { useCachedQuery } from '@/hooks/useCachedQuery'
+import { TTL } from '@/lib/cache'
 import { toApiError } from '@/lib/apiError'
 import { changeAdminPassword, getAdminProfile, updateAdminName } from '@/services/authService'
-import type { AdminUser } from '@/types/auth'
 
 type PasswordErrors = Partial<Record<'current_password' | 'password' | 'password_confirmation', string>>
 
 /** Mengganti nama dan kata sandi admin yang sedang masuk. */
 export function useAdminAccount() {
-  const [admin, setAdmin] = useState<AdminUser | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [reloadKey, setReloadKey] = useState(0)
+  const query = useCachedQuery(CACHE_KEYS.adminProfile, getAdminProfile, { ttl: TTL.long })
+  const admin = query.data ?? null
 
   const [name, setName] = useState('')
+  const [filled, setFilled] = useState(false)
   const [nameSaving, setNameSaving] = useState(false)
   const [nameError, setNameError] = useState<string | null>(null)
   const [nameNotice, setNameNotice] = useState<string | null>(null)
@@ -26,24 +26,13 @@ export function useAdminAccount() {
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [passwordNotice, setPasswordNotice] = useState<string | null>(null)
 
-  useEffect(() => {
-    let active = true
-    setLoading(true)
-    setLoadError(null)
-    getAdminProfile()
-      .then((user) => {
-        if (!active) return
-        setAdmin(user)
-        setName(user.name)
-      })
-      .catch((err) => active && setLoadError(toApiError(err).message))
-      .finally(() => active && setLoading(false))
-    return () => {
-      active = false
-    }
-  }, [reloadKey])
+  // Kolom nama diisi sekali saat data pertama tersedia; penyegaran di latar belakang tidak menimpanya.
+  if (admin && !filled) {
+    setFilled(true)
+    setName(admin.name)
+  }
 
-  const reload = useCallback(() => setReloadKey((k) => k + 1), [])
+  const { set: setAdminCache, reload } = query
 
   const nameDirty = admin !== null && name.trim() !== admin.name
 
@@ -58,17 +47,16 @@ export function useAdminAccount() {
     setNameSaving(true)
     try {
       const user = await updateAdminName(name.trim())
-      setAdmin(user)
+      setAdminCache(user) // sidebar dan topbar memakai cache yang sama, jadi ikut berubah
       setName(user.name)
       setNameNotice('Nama berhasil diperbarui.')
-      emitAdminDataChanged() // sidebar ikut memperbarui nama
     } catch (err) {
       const apiError = toApiError(err)
       setNameError(apiError.errorFor('name') ?? apiError.message)
     } finally {
       setNameSaving(false)
     }
-  }, [name, nameSaving])
+  }, [name, nameSaving, setAdminCache])
 
   const savePassword = useCallback(async () => {
     if (passwordSaving) return
@@ -110,8 +98,8 @@ export function useAdminAccount() {
 
   return {
     admin,
-    loading,
-    loadError,
+    loading: query.isLoading,
+    loadError: query.error,
     reload,
     name,
     setName: (value: string) => {
